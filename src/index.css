@@ -1024,3 +1024,272 @@
 .file-label-btn:hover svg {
   transform: translateY(-2px);
 }
+
+/* Voice Search Button Styles */
+.voice-search-btn {
+  position: relative;
+  overflow: visible;
+}
+
+.voice-search-btn:hover {
+  box-shadow: 0 6px 30px rgba(194, 120, 53, 0.6) !important;
+}
+
+.voice-search-btn:disabled {
+  opacity: 0.9;
+  animation: pulse-mic 1.5s infinite;
+}
+
+@keyframes pulse-mic {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 30px rgba(239, 68, 68, 0.6);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Voice Notification Styles */
+.voice-notification {
+  animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.voice-notification.success {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+.voice-notification.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+.voice-notification.warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+/* Recommendation System Styles */
+.recommendations-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #c27835 rgba(255, 255, 255, 0.1);
+}
+
+.recommendations-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.recommendations-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.recommendations-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #c27835, #d97706);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.recommendations-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+}
+
+.recommendation-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.recommendation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(194, 120, 53, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.recommendation-card:hover::before {
+  left: 100%;
+}
+
+.recommendation-card:hover {
+  box-shadow: 0 12px 40px rgba(194, 120, 53, 0.3), 0 0 0 1px rgba(194, 120, 53, 0.2);
+  border-color: rgba(194, 120, 53, 0.3);
+}
+
+/* Price Styling */
+.price-tag {
+  color: #c27835;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.price-amount {
+  color: #c27835;
+  font-weight: 700;
+}
+
+.total-highlight {
+  color: #f59e0b;
+  font-size: 1.3rem;
+}
+
+/* Recommendations Grid */
+.recommendations-grid {
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading Skeleton (Optional Enhancement) */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Recommendation Badge */
+.recommendation-card::after {
+  content: '⭐';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.recommendation-card:hover::after {
+  opacity: 1;
+}
+
+/* Search Bar Styles */
+.search-bar-container {
+  animation: slideInDown 0.4s ease;
+}
+
+.search-input {
+  font-family: inherit;
+}
+
+.search-input:focus {
+  border-color: #c27835 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 0 0 4px rgba(194, 120, 53, 0.15), 0 4px 20px rgba(194, 120, 53, 0.2) !important;
+}
+
+.search-input:hover {
+  border-color: rgba(194, 120, 53, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.search-input::placeholder {
+  color: rgba(194, 120, 53, 0.6);
+  font-style: italic;
+}
+
+/* Search Animation */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Search Results Counter */
+.search-results-count {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Enhanced Voice Text Display */
+.voice-text-display {
+  animation: slideInDown 0.4s ease, pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: rgba(194, 120, 53, 0.4);
+    box-shadow: 0 4px 15px rgba(194, 120, 53, 0.2);
+  }
+  50% {
+    border-color: rgba(194, 120, 53, 0.7);
+    box-shadow: 0 6px 25px rgba(194, 120, 53, 0.35);
+  }
+}
+
+/* Voice Processing Animation */
+@keyframes voice-processing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.voice-processing {
+  animation: voice-processing 1s infinite;
+}

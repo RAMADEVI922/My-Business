@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { User, Lock, LogIn, ChevronRight, ArrowLeft, ShieldCheck, Plus, Package, IndianRupee, Image as ImageIcon, Trash2, LayoutDashboard, LogOut, Upload, Mail, ShoppingCart, UserPlus, Home, ListOrdered, Eye, EyeOff, Phone } from 'lucide-react';
+import { User, Lock, LogIn, ChevronRight, ArrowLeft, ShieldCheck, Plus, Package, IndianRupee, Image as ImageIcon, Trash2, LayoutDashboard, LogOut, Upload, Mail, ShoppingCart, UserPlus, Home, ListOrdered, Eye, EyeOff, Phone, Mic, Search } from 'lucide-react';
 import { getProducts, saveProduct, removeProduct, getAdmin, getAdminByEmail, updateAdminPassword, saveCustomer, getCustomer, uploadToS3, saveOrder, getOrders, updateOrderStatus, getOrdersByEmail, sendOrderNotification, saveOTP, verifyOTP, sendPasswordResetEmail } from './aws-config';
 import AdminNavbar from './components/AdminNavbar';
 import DeliveryCalendar from './components/DeliveryCalendar';
@@ -29,6 +29,23 @@ function App() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [resetLoading, setResetLoading] = useState(false);
+
+    // Voice Search States
+    const [isListening, setIsListening] = useState(false);
+    const [voiceText, setVoiceText] = useState('');
+    const [voiceNotification, setVoiceNotification] = useState({ show: false, message: '', type: '' });
+
+    // Recommendation System States
+    const [recentlyViewed, setRecentlyViewed] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+        } catch {
+            return [];
+        }
+    });
+    const [recommendedProducts, setRecommendedProducts] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     const sanitizePhotoUrl = (url) => {
         if (!url) return url;
@@ -107,13 +124,13 @@ function App() {
     useEffect(() => { sessionStorage.setItem('app_user', JSON.stringify(currentUser)); }, [currentUser]);
     useEffect(() => { sessionStorage.setItem('app_cart', JSON.stringify(cart)); }, [cart]);
 
-    const addToCart = (product) => {
+    const addToCart = (product, quantity = 1) => {
         setCart(prev => {
             const existing = prev.find(item => item.id === product.id);
             if (existing) {
-                return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+                return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + quantity } : item);
             }
-            return [...prev, { ...product, qty: 1 }];
+            return [...prev, { ...product, qty: quantity }];
         });
     };
 
@@ -130,6 +147,297 @@ function App() {
 
     const cartTotal = cart.reduce((sum, item) => sum + Number(item.price) * item.qty, 0);
     const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
+    // Voice Search Handler
+    const handleVoiceSearch = () => {
+        // Check if browser supports speech recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            setVoiceNotification({
+                show: true,
+                message: 'Voice search is not supported in your browser. Please try Chrome or Edge.',
+                type: 'error'
+            });
+            setTimeout(() => setVoiceNotification({ show: false, message: '', type: '' }), 4000);
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            setIsListening(true);
+            setVoiceText('Listening...');
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.toLowerCase().trim();
+            setVoiceText(`You said: "${transcript}"`);
+            
+            // Parse multi-product voice command
+            const parseVoiceCommand = (text) => {
+                // Number word to digit mapping
+                const numberWords = {
+                    'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                    'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+                    'a': 1, 'an': 1
+                };
+
+                // Remove common filler words
+                let cleanText = text
+                    .replace(/add|to|cart|please|the|my/gi, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                // Split by 'and' or commas
+                const segments = cleanText.split(/\s+and\s+|,\s*/);
+                
+                const parsedItems = [];
+
+                segments.forEach(segment => {
+                    segment = segment.trim();
+                    if (!segment) return;
+
+                    // Try to extract quantity and product name
+                    // Pattern: "2 breads" or "two bread" or just "bread"
+                    const match = segment.match(/^(\d+|one|two|three|four|five|six|seven|eight|nine|ten|a|an)?\s*(.+)$/i);
+                    
+                    if (match) {
+                        let quantity = 1;
+                        let productText = match[2] || match[1] || segment;
+
+                        // Check if first part is a number
+                        if (match[1]) {
+                            const numStr = match[1].toLowerCase();
+                            quantity = numberWords[numStr] || parseInt(match[1]) || 1;
+                            productText = match[2];
+                        }
+
+                        // Remove plural 's' for better matching
+                        productText = productText.trim().replace(/s$/, '');
+
+                        parsedItems.push({
+                            quantity: quantity,
+                            searchText: productText
+                        });
+                    }
+                });
+
+                return parsedItems;
+            };
+
+            // Parse the voice command
+            const parsedItems = parseVoiceCommand(transcript);
+            
+            if (parsedItems.length === 0) {
+                setVoiceNotification({
+                    show: true,
+                    message: `✗ Could not understand the command. Try saying "Add 2 breads and 1 cake"`,
+                    type: 'error'
+                });
+                setTimeout(() => {
+                    setVoiceNotification({ show: false, message: '', type: '' });
+                    setVoiceText('');
+                }, 4000);
+                return;
+            }
+
+            // Match products and add to cart
+            let addedCount = 0;
+            let totalQuantity = 0;
+            const notFoundItems = [];
+            const addedItems = [];
+
+            parsedItems.forEach(item => {
+                // Find matching product (case-insensitive, fuzzy matching)
+                const matchedProduct = products.find(product => {
+                    const productName = product.name.toLowerCase();
+                    const searchText = item.searchText.toLowerCase();
+                    
+                    // Exact match or contains
+                    return productName === searchText || 
+                           productName.includes(searchText) || 
+                           searchText.includes(productName) ||
+                           productName.replace(/\s+/g, '') === searchText.replace(/\s+/g, '');
+                });
+
+                if (matchedProduct) {
+                    // Add to cart with specified quantity (using the updated addToCart function)
+                    addToCart(matchedProduct, item.quantity);
+                    addedCount++;
+                    totalQuantity += item.quantity;
+                    addedItems.push(`${item.quantity}x ${matchedProduct.name}`);
+                } else {
+                    notFoundItems.push(item.searchText);
+                }
+            });
+
+            // Show results
+            if (addedCount > 0) {
+                const itemsList = addedItems.join(', ');
+                setVoiceNotification({
+                    show: true,
+                    message: `✓ ${totalQuantity} item${totalQuantity > 1 ? 's' : ''} added to cart! (${itemsList})`,
+                    type: 'success'
+                });
+            }
+
+            if (notFoundItems.length > 0 && addedCount === 0) {
+                setVoiceNotification({
+                    show: true,
+                    message: `✗ No matching products found for: ${notFoundItems.join(', ')}`,
+                    type: 'error'
+                });
+            } else if (notFoundItems.length > 0) {
+                // Partial success
+                setTimeout(() => {
+                    setVoiceNotification({
+                        show: true,
+                        message: `⚠️ Could not find: ${notFoundItems.join(', ')}`,
+                        type: 'warning'
+                    });
+                }, 3500);
+            }
+
+            setTimeout(() => {
+                setVoiceNotification({ show: false, message: '', type: '' });
+                setVoiceText('');
+            }, notFoundItems.length > 0 ? 7000 : 4000);
+        };
+
+        recognition.onerror = (event) => {
+            setIsListening(false);
+            setVoiceText('');
+            
+            let errorMessage = 'Voice search failed. Please try again.';
+            if (event.error === 'not-allowed') {
+                errorMessage = 'Microphone access is required to use voice search.';
+            } else if (event.error === 'no-speech') {
+                errorMessage = 'No speech detected. Please try again.';
+            }
+            
+            setVoiceNotification({
+                show: true,
+                message: errorMessage,
+                type: 'error'
+            });
+            
+            setTimeout(() => setVoiceNotification({ show: false, message: '', type: '' }), 4000);
+        };
+
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+
+        recognition.start();
+    };
+
+    // Product Recommendation System
+    const addToRecentlyViewed = (product) => {
+        setRecentlyViewed(prev => {
+            // Remove if already exists
+            const filtered = prev.filter(p => p.id !== product.id);
+            // Add to beginning, keep only last 10
+            const updated = [product, ...filtered].slice(0, 10);
+            localStorage.setItem('recentlyViewed', JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const getRecommendations = () => {
+        if (products.length === 0) return [];
+
+        let recommendations = [];
+        const cartProductIds = cart.map(item => item.id);
+
+        // Define product relationships/categories
+        const productRelations = {
+            'bread': ['butter', 'jam', 'cream', 'cake'],
+            'cake': ['candle', 'cupcake', 'fruit'],
+            'cream': ['bread', 'cake', 'fruit'],
+            'fruit': ['cake', 'cream']
+        };
+
+        // 1. Recommendations based on cart items
+        if (cart.length > 0) {
+            cart.forEach(cartItem => {
+                const itemNameLower = cartItem.name.toLowerCase();
+                
+                // Find related keywords
+                Object.keys(productRelations).forEach(keyword => {
+                    if (itemNameLower.includes(keyword)) {
+                        const relatedKeywords = productRelations[keyword];
+                        
+                        // Find products matching related keywords
+                        relatedKeywords.forEach(relatedKeyword => {
+                            const related = products.filter(p => 
+                                p.name.toLowerCase().includes(relatedKeyword) &&
+                                !cartProductIds.includes(p.id) &&
+                                p.id !== cartItem.id
+                            );
+                            recommendations.push(...related);
+                        });
+                    }
+                });
+            });
+        }
+
+        // 2. Recommendations based on recently viewed
+        if (recommendations.length < 4 && recentlyViewed.length > 0) {
+            recentlyViewed.forEach(viewedProduct => {
+                const viewedNameLower = viewedProduct.name.toLowerCase();
+                
+                Object.keys(productRelations).forEach(keyword => {
+                    if (viewedNameLower.includes(keyword)) {
+                        const relatedKeywords = productRelations[keyword];
+                        
+                        relatedKeywords.forEach(relatedKeyword => {
+                            const related = products.filter(p => 
+                                p.name.toLowerCase().includes(relatedKeyword) &&
+                                !cartProductIds.includes(p.id) &&
+                                p.id !== viewedProduct.id
+                            );
+                            recommendations.push(...related);
+                        });
+                    }
+                });
+            });
+        }
+
+        // 3. Fallback: Show random products not in cart
+        if (recommendations.length < 4) {
+            const fallback = products.filter(p => !cartProductIds.includes(p.id));
+            recommendations.push(...fallback);
+        }
+
+        // Remove duplicates and limit to 4
+        const uniqueRecommendations = Array.from(
+            new Map(recommendations.map(item => [item.id, item])).values()
+        ).slice(0, 4);
+
+        return uniqueRecommendations;
+    };
+
+    // Update recommendations when cart or products change
+    useEffect(() => {
+        const recommendations = getRecommendations();
+        setRecommendedProducts(recommendations);
+    }, [cart, products, recentlyViewed]);
+
+    // Search functionality
+    useEffect(() => {
+        if (searchQuery.trim() === '') {
+            setFilteredProducts(products);
+        } else {
+            const filtered = products.filter(product =>
+                product.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredProducts(filtered);
+        }
+    }, [searchQuery, products]);
 
     const [orderDetails, setOrderDetails] = useState({ address: '', pincode: '', countryCode: '+91', phone: '', deliveryDate: '', paymentCategory: '', paymentMethod: '' });
     const [orderError, setOrderError] = useState('');
@@ -715,32 +1023,346 @@ function App() {
                         className="dashboard-container"
                         style={{ marginTop: '5rem' }}
                     >
-                        <h2 className="title" style={{ textAlign: 'center' }}>Featured Products</h2>
-                        <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-                            {products.map(product => (
-                                <div key={product.id} className="product-item glass-container" style={{ flexDirection: 'column', gap: '1rem', padding: '1.5rem' }}>
-                                    <div className="product-img-wrapper" style={{ width: '100%', height: '200px' }}>
-                                        {product.photo ? (
-                                            <img
-                                                src={product.photo}
-                                                alt={product.name}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-                                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                            />
-                                        ) : (
-                                            <ImageIcon size={48} className="text-secondary" />
-                                        )}
-                                    </div>
-                                    <div style={{ width: '100%' }}>
-                                        <h3 className="product-name" style={{ color: 'var(--text-primary)', fontSize: '1.25rem' }}>{product.name}</h3>
-                                        <p className="product-price price-amount" style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>₹{product.price}</p>
-                                        <button className="btn-primary btn-add-to-cart w-full" onClick={() => addToCart(product)}>
-                                            {cart.find(i => i.id === product.id) ? `In Cart (${cart.find(i => i.id === product.id).qty})` : 'Add to Cart'}
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                        {/* Voice Notification */}
+                        <AnimatePresence>
+                            {voiceNotification.show && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    className={`voice-notification ${voiceNotification.type}`}
+                                    style={{
+                                        position: 'fixed',
+                                        top: '100px',
+                                        left: '50%',
+                                        transform: 'translateX(-50%)',
+                                        zIndex: 2000,
+                                        padding: '1rem 2rem',
+                                        borderRadius: '12px',
+                                        fontWeight: 600,
+                                        fontSize: '1rem',
+                                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                                        background: voiceNotification.type === 'success' 
+                                            ? 'linear-gradient(135deg, #10b981, #059669)' 
+                                            : 'linear-gradient(135deg, #ef4444, #dc2626)',
+                                        color: 'white'
+                                    }}
+                                >
+                                    {voiceNotification.message}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                            <h2 className="title" style={{ textAlign: 'center', flex: 1 }}>Featured Products</h2>
+                            
+                            {/* Voice Search Button */}
+                            <motion.button
+                                onClick={handleVoiceSearch}
+                                disabled={isListening}
+                                className="voice-search-btn"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                style={{
+                                    position: 'relative',
+                                    background: isListening 
+                                        ? 'linear-gradient(135deg, #ef4444, #dc2626)' 
+                                        : 'linear-gradient(135deg, #c27835, #d97706)',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '60px',
+                                    height: '60px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: isListening ? 'not-allowed' : 'pointer',
+                                    boxShadow: '0 4px 20px rgba(194, 120, 53, 0.4)',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <Mic size={28} color="white" />
+                                {isListening && (
+                                    <motion.div
+                                        className="listening-pulse"
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            borderRadius: '50%',
+                                            border: '3px solid #ef4444',
+                                            animation: 'pulse-ring 1.5s infinite'
+                                        }}
+                                    />
+                                )}
+                            </motion.button>
                         </div>
+
+                        {/* Search Bar */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="search-bar-container"
+                            style={{
+                                marginBottom: '2rem',
+                                maxWidth: '600px',
+                                margin: '0 auto 2rem'
+                            }}
+                        >
+                            <div style={{
+                                position: 'relative',
+                                width: '100%'
+                            }}>
+                                <Search 
+                                    size={20} 
+                                    style={{
+                                        position: 'absolute',
+                                        left: '1rem',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        color: '#c27835',
+                                        pointerEvents: 'none'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Search products..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="search-input"
+                                    style={{
+                                        width: '100%',
+                                        padding: '1rem 1rem 1rem 3rem',
+                                        fontSize: '1rem',
+                                        border: '2px solid rgba(194, 120, 53, 0.3)',
+                                        borderRadius: '50px',
+                                        background: 'rgba(255, 255, 255, 0.05)',
+                                        color: 'var(--text-primary)',
+                                        outline: 'none',
+                                        transition: 'all 0.3s ease',
+                                        backdropFilter: 'blur(10px)'
+                                    }}
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        style={{
+                                            position: 'absolute',
+                                            right: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            background: 'rgba(194, 120, 53, 0.2)',
+                                            border: 'none',
+                                            borderRadius: '50%',
+                                            width: '28px',
+                                            height: '28px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            color: '#c27835',
+                                            fontSize: '1.2rem',
+                                            fontWeight: 'bold',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = '#c27835';
+                                            e.currentTarget.style.color = 'white';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = 'rgba(194, 120, 53, 0.2)';
+                                            e.currentTarget.style.color = '#c27835';
+                                        }}
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
+                            {searchQuery && (
+                                <p style={{
+                                    marginTop: '0.75rem',
+                                    fontSize: '0.9rem',
+                                    color: 'var(--text-secondary)',
+                                    textAlign: 'center'
+                                }}>
+                                    {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+                                </p>
+                            )}
+                        </motion.div>
+
+                        {/* Voice Text Display */}
+                        {voiceText && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="voice-text-display"
+                                style={{
+                                    textAlign: 'center',
+                                    padding: '1.25rem 1.5rem',
+                                    marginBottom: '1.5rem',
+                                    background: 'linear-gradient(135deg, rgba(194, 120, 53, 0.15), rgba(194, 120, 53, 0.05))',
+                                    borderRadius: '16px',
+                                    border: '2px solid rgba(194, 120, 53, 0.4)',
+                                    color: 'var(--text-primary)',
+                                    fontSize: '1.05rem',
+                                    fontWeight: 500,
+                                    boxShadow: '0 4px 15px rgba(194, 120, 53, 0.2)',
+                                    animation: 'pulse-border 2s infinite'
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+                                    <span style={{ fontSize: '1.5rem' }}>🎤</span>
+                                    <span>{voiceText}</span>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+                            {filteredProducts.length > 0 ? (
+                                filteredProducts.map(product => (
+                                    <div key={product.id} className="product-item glass-container" style={{ flexDirection: 'column', gap: '1rem', padding: '1.5rem' }}>
+                                        <div className="product-img-wrapper" style={{ width: '100%', height: '200px' }}>
+                                            {product.photo ? (
+                                                <img
+                                                    src={product.photo}
+                                                    alt={product.name}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                />
+                                            ) : (
+                                                <ImageIcon size={48} className="text-secondary" />
+                                            )}
+                                        </div>
+                                        <div style={{ width: '100%' }}>
+                                            <h3 className="product-name" style={{ color: 'var(--text-primary)', fontSize: '1.25rem' }}>{product.name}</h3>
+                                            <p className="product-price price-amount" style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>₹{product.price}</p>
+                                            <button 
+                                                className="btn-primary btn-add-to-cart w-full" 
+                                                onClick={() => {
+                                                    addToCart(product);
+                                                    addToRecentlyViewed(product);
+                                                }}
+                                            >
+                                                {cart.find(i => i.id === product.id) ? `In Cart (${cart.find(i => i.id === product.id).qty})` : 'Add to Cart'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div style={{ 
+                                    gridColumn: '1 / -1', 
+                                    textAlign: 'center', 
+                                    padding: '3rem',
+                                    color: 'var(--text-secondary)'
+                                }}>
+                                    <Search size={64} style={{ opacity: 0.3, marginBottom: '1rem' }} />
+                                    <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>No products found</p>
+                                    <p style={{ fontSize: '0.95rem', marginTop: '0.5rem' }}>Try searching with different keywords</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Recommendations Section on Products Page */}
+                        {recommendedProducts.length > 0 && recentlyViewed.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 }}
+                                style={{ marginTop: '4rem' }}
+                            >
+                                <h3 style={{ 
+                                    fontSize: '1.75rem', 
+                                    fontWeight: 700, 
+                                    color: 'var(--text-primary)', 
+                                    marginBottom: '1.5rem',
+                                    textAlign: 'center',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '0.5rem'
+                                }}>
+                                    ✨ Recommended For You
+                                </h3>
+                                
+                                <div className="recommendations-grid" style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                                    gap: '1.5rem'
+                                }}>
+                                    {recommendedProducts.map(product => (
+                                        <motion.div
+                                            key={product.id}
+                                            whileHover={{ scale: 1.03, y: -8 }}
+                                            className="recommendation-card glass-container"
+                                            style={{
+                                                padding: '1.25rem',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '1rem',
+                                                cursor: 'pointer'
+                                            }}
+                                            onClick={() => addToRecentlyViewed(product)}
+                                        >
+                                            <div style={{ 
+                                                width: '100%', 
+                                                height: '160px', 
+                                                borderRadius: '12px', 
+                                                overflow: 'hidden',
+                                                background: '#f5eee6',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                {product.photo ? (
+                                                    <img
+                                                        src={product.photo}
+                                                        alt={product.name}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                    />
+                                                ) : (
+                                                    <ImageIcon size={48} style={{ color: '#c27835' }} />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <h4 style={{ 
+                                                    fontSize: '1.1rem', 
+                                                    fontWeight: 600, 
+                                                    color: 'var(--text-primary)',
+                                                    margin: 0
+                                                }}>
+                                                    {product.name}
+                                                </h4>
+                                                <p className="price-amount" style={{ 
+                                                    fontSize: '1.3rem', 
+                                                    fontWeight: 700,
+                                                    margin: '0.5rem 0'
+                                                }}>
+                                                    ₹{product.price}
+                                                </p>
+                                            </div>
+                                            <button
+                                                className="btn-primary"
+                                                style={{ 
+                                                    fontSize: '0.9rem', 
+                                                    padding: '0.7rem 1.2rem',
+                                                    width: '100%'
+                                                }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    addToCart(product);
+                                                }}
+                                            >
+                                                {cart.find(i => i.id === product.id) ? `In Cart (${cart.find(i => i.id === product.id).qty})` : 'Add to Cart'}
+                                            </button>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
                     </motion.div>
                 ) : view === 'cart' ? (
                     <motion.div
@@ -806,6 +1428,110 @@ function App() {
                                     </button>
                                 </div>
                             </div>
+                        )}
+
+                        {/* Recommendations Section */}
+                        {recommendedProducts.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                style={{ marginTop: '3rem' }}
+                            >
+                                <h3 style={{ 
+                                    fontSize: '1.5rem', 
+                                    fontWeight: 700, 
+                                    color: 'var(--text-primary)', 
+                                    marginBottom: '1.5rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem'
+                                }}>
+                                    ✨ You May Also Like
+                                </h3>
+                                
+                                <div className="recommendations-scroll" style={{
+                                    display: 'flex',
+                                    gap: '1rem',
+                                    overflowX: 'auto',
+                                    paddingBottom: '1rem',
+                                    scrollBehavior: 'smooth'
+                                }}>
+                                    {recommendedProducts.map(product => (
+                                        <motion.div
+                                            key={product.id}
+                                            whileHover={{ scale: 1.05, y: -5 }}
+                                            className="recommendation-card glass-container"
+                                            style={{
+                                                minWidth: '200px',
+                                                maxWidth: '200px',
+                                                padding: '1rem',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '0.75rem',
+                                                cursor: 'pointer'
+                                            }}
+                                            onClick={() => addToRecentlyViewed(product)}
+                                        >
+                                            <div style={{ 
+                                                width: '100%', 
+                                                height: '140px', 
+                                                borderRadius: '12px', 
+                                                overflow: 'hidden',
+                                                background: '#f5eee6',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                {product.photo ? (
+                                                    <img
+                                                        src={product.photo}
+                                                        alt={product.name}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                    />
+                                                ) : (
+                                                    <ImageIcon size={40} style={{ color: '#c27835' }} />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <h4 style={{ 
+                                                    fontSize: '0.95rem', 
+                                                    fontWeight: 600, 
+                                                    color: 'var(--text-primary)',
+                                                    margin: 0,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap'
+                                                }}>
+                                                    {product.name}
+                                                </h4>
+                                                <p className="price-tag" style={{ 
+                                                    fontSize: '1.1rem', 
+                                                    fontWeight: 700,
+                                                    margin: '0.25rem 0'
+                                                }}>
+                                                    ₹{product.price}
+                                                </p>
+                                            </div>
+                                            <button
+                                                className="btn-primary"
+                                                style={{ 
+                                                    fontSize: '0.85rem', 
+                                                    padding: '0.6rem 1rem',
+                                                    width: '100%'
+                                                }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    addToCart(product);
+                                                }}
+                                            >
+                                                Add to Cart
+                                            </button>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </motion.div>
                         )}
                     </motion.div>
                 ) : view === 'order-address' ? (
@@ -1456,7 +2182,7 @@ function App() {
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
                                                             <div>
                                                                 <p className="order-id-highlight" style={{ fontSize: '0.9rem', marginBottom: '8px' }}>{order.orderId}</p>
-                                                                <p style={{ margin: '2px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>From: {order.customerEmail} | Deliver by: {order.deliveryDate}</p>
+                                                                <p style={{ margin: '2px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>From: {order.customerEmail} | Phone: {order.phone} | Deliver by: {order.deliveryDate}</p>
                                                                 <p style={{ margin: '2px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Address: {order.address}</p>
                                                                 <p style={{ margin: '4px 0 0', fontSize: '0.85rem' }}>{order.items?.map(i => `${i.name} ×${i.qty}`).join(', ')}</p>
                                                                 <p className="price-amount" style={{ margin: '4px 0 0', fontSize: '1.1rem' }}>Total: ₹{order.total}</p>
