@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { ShoppingCart, LogOut, Package, ListOrdered, Plus } from 'lucide-react';
+import { ShoppingCart, LogOut, Package, ListOrdered, Plus, LayoutDashboard } from 'lucide-react';
 
 const AdminNavbar = ({ onLogout }) => {
     return (
@@ -10,6 +10,9 @@ const AdminNavbar = ({ onLogout }) => {
             </div>
             <div className="nav-links">
                 <NavLink to="/admin" end className={({ isActive }) => isActive ? 'active' : ''}>
+                    <LayoutDashboard size={18} /> Dashboard
+                </NavLink>
+                <NavLink to="/admin/products" className={({ isActive }) => isActive ? 'active' : ''}>
                     <Package size={18} /> Products
                 </NavLink>
                 <NavLink to="/admin/orders" className={({ isActive }) => isActive ? 'active' : ''}>

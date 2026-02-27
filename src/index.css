@@ -1293,3 +1293,223 @@
 .voice-processing {
   animation: voice-processing 1s infinite;
 }
+
+/* Order Tracking Styles */
+.order-tracking-container {
+  animation: fadeInUp 0.6s ease;
+}
+
+.order-progress-tracker {
+  position: relative;
+  padding: 2rem 0;
+}
+
+/* Progress Bar */
+.progress-bar-bg {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transform: translateY(-50%);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c27835, #d97706, #f59e0b);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(194, 120, 53, 0.5);
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Progress Steps */
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  position: relative;
+}
+
+.step-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.progress-step.completed .step-icon-wrapper {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #10b981;
+  color: white;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.progress-step.active .step-icon-wrapper {
+  background: linear-gradient(135deg, #c27835, #d97706);
+  border-color: #c27835;
+  color: white;
+  box-shadow: 0 8px 30px rgba(194, 120, 53, 0.5);
+  animation: pulse-glow-step 2s infinite;
+}
+
+.progress-step.future .step-icon-wrapper {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes pulse-glow-step {
+  0%, 100% {
+    box-shadow: 0 8px 30px rgba(194, 120, 53, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 12px 40px rgba(194, 120, 53, 0.7);
+    transform: scale(1.05);
+  }
+}
+
+.step-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.progress-step.completed .step-label {
+  color: #10b981;
+}
+
+.progress-step.active .step-label {
+  color: #c27835;
+  font-weight: 700;
+}
+
+.progress-step.future .step-label {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.step-emoji {
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .step-emoji {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Order ID Highlight */
+.order-id-highlight {
+  background: linear-gradient(135deg, #c27835, #d97706);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design for Order Tracking */
+@media (max-width: 768px) {
+  .progress-steps {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .progress-bar-bg {
+    left: 50%;
+    right: auto;
+    top: 10%;
+    bottom: 10%;
+    width: 6px;
+    height: auto;
+    transform: translateX(-50%);
+  }
+
+  .progress-bar-fill {
+    width: 100%;
+  }
+
+  .step-icon-wrapper {
+    width: 70px;
+    height: 70px;
+  }
+
+  .progress-step {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  .step-label {
+    text-align: left;
+  }
+}
+
+/* Success Animation */
+@keyframes success-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.progress-step.completed .step-icon-wrapper {
+  animation: success-pop 0.5s ease;
+}

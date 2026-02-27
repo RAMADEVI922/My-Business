@@ -2100,6 +2100,247 @@ function App() {
 
                         <Routes>
                             <Route path="/admin" element={
+                                <>
+                                    {/* Dashboard Overview */}
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '2rem', color: 'var(--text-primary)' }}>
+                                            Dashboard Overview
+                                        </h2>
+
+                                        {/* Summary Cards */}
+                                        <div style={{ 
+                                            display: 'grid', 
+                                            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+                                            gap: '1.5rem',
+                                            marginBottom: '3rem'
+                                        }}>
+                                            {/* Total Products Card */}
+                                            <motion.div
+                                                whileHover={{ scale: 1.03, y: -5 }}
+                                                className="glass-container"
+                                                style={{
+                                                    padding: '1.5rem',
+                                                    background: 'linear-gradient(135deg, rgba(194, 120, 53, 0.1), rgba(194, 120, 53, 0.05))',
+                                                    border: '1.5px solid rgba(194, 120, 53, 0.3)',
+                                                    cursor: 'pointer'
+                                                }}
+                                                onClick={() => navigate('/admin/products')}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                    <div style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        borderRadius: '12px',
+                                                        background: 'linear-gradient(135deg, #c27835, #d97706)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        boxShadow: '0 4px 15px rgba(194, 120, 53, 0.3)'
+                                                    }}>
+                                                        <Package size={24} color="white" />
+                                                    </div>
+                                                    <ChevronRight size={20} color="var(--accent-color)" />
+                                                </div>
+                                                <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.5rem 0' }}>
+                                                    {products.length}
+                                                </h3>
+                                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>
+                                                    Total Products
+                                                </p>
+                                            </motion.div>
+
+                                            {/* Total Orders Card */}
+                                            <motion.div
+                                                whileHover={{ scale: 1.03, y: -5 }}
+                                                className="glass-container"
+                                                style={{
+                                                    padding: '1.5rem',
+                                                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05))',
+                                                    border: '1.5px solid rgba(59, 130, 246, 0.3)',
+                                                    cursor: 'pointer'
+                                                }}
+                                                onClick={() => navigate('/admin/orders')}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                    <div style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        borderRadius: '12px',
+                                                        background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
+                                                    }}>
+                                                        <ShoppingCart size={24} color="white" />
+                                                    </div>
+                                                    <ChevronRight size={20} color="#3b82f6" />
+                                                </div>
+                                                <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.5rem 0' }}>
+                                                    {orders.length}
+                                                </h3>
+                                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>
+                                                    Total Orders
+                                                </p>
+                                                {orders.filter(o => o.status === 'pending').length > 0 && (
+                                                    <div style={{
+                                                        marginTop: '0.5rem',
+                                                        padding: '0.25rem 0.75rem',
+                                                        background: 'rgba(239, 68, 68, 0.2)',
+                                                        borderRadius: '20px',
+                                                        fontSize: '0.8rem',
+                                                        color: '#ef4444',
+                                                        fontWeight: 600,
+                                                        display: 'inline-block'
+                                                    }}>
+                                                        {orders.filter(o => o.status === 'pending').length} Pending
+                                                    </div>
+                                                )}
+                                            </motion.div>
+
+                                            {/* Total Revenue Card */}
+                                            <motion.div
+                                                whileHover={{ scale: 1.03, y: -5 }}
+                                                className="glass-container"
+                                                style={{
+                                                    padding: '1.5rem',
+                                                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05))',
+                                                    border: '1.5px solid rgba(16, 185, 129, 0.3)',
+                                                    cursor: 'default'
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                    <div style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        borderRadius: '12px',
+                                                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+                                                    }}>
+                                                        <IndianRupee size={24} color="white" />
+                                                    </div>
+                                                </div>
+                                                <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.5rem 0' }}>
+                                                    ₹{orders.filter(o => o.status === 'accepted' || o.status === 'delivered').reduce((sum, order) => sum + (Number(order.total) || 0), 0).toFixed(0)}
+                                                </h3>
+                                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>
+                                                    Total Revenue
+                                                </p>
+                                                <p style={{ color: '#10b981', fontSize: '0.8rem', marginTop: '0.5rem', fontWeight: 600 }}>
+                                                    From {orders.filter(o => o.status === 'accepted' || o.status === 'delivered').length} completed orders
+                                                </p>
+                                            </motion.div>
+
+                                            {/* Total Customers Card */}
+                                            <motion.div
+                                                whileHover={{ scale: 1.03, y: -5 }}
+                                                className="glass-container"
+                                                style={{
+                                                    padding: '1.5rem',
+                                                    background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.05))',
+                                                    border: '1.5px solid rgba(168, 85, 247, 0.3)',
+                                                    cursor: 'default'
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                    <div style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        borderRadius: '12px',
+                                                        background: 'linear-gradient(135deg, #a855f7, #9333ea)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.3)'
+                                                    }}>
+                                                        <User size={24} color="white" />
+                                                    </div>
+                                                </div>
+                                                <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.5rem 0' }}>
+                                                    {new Set(orders.map(o => o.customerEmail)).size}
+                                                </h3>
+                                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>
+                                                    Total Customers
+                                                </p>
+                                            </motion.div>
+                                        </div>
+
+                                        {/* Recent Orders Section */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.3 }}
+                                            className="glass-container"
+                                            style={{ padding: '2rem', marginBottom: '2rem' }}
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                                                    Recent Orders
+                                                </h3>
+                                                <button
+                                                    onClick={() => navigate('/admin/orders')}
+                                                    style={{
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        color: 'var(--accent-color)',
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.9rem',
+                                                        fontWeight: 600,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '0.5rem'
+                                                    }}
+                                                >
+                                                    View All <ChevronRight size={16} />
+                                                </button>
+                                            </div>
+                                            {orders.slice(0, 5).map(order => (
+                                                <div key={order.orderId} style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    padding: '1rem',
+                                                    background: 'rgba(255, 255, 255, 0.03)',
+                                                    borderRadius: '12px',
+                                                    marginBottom: '0.75rem',
+                                                    border: '1px solid rgba(255, 255, 255, 0.05)'
+                                                }}>
+                                                    <div>
+                                                        <p style={{ fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{order.orderId}</p>
+                                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0.25rem 0 0' }}>
+                                                            {order.customerEmail}
+                                                        </p>
+                                                    </div>
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <p style={{ fontWeight: 700, color: 'var(--accent-color)', margin: 0 }}>₹{order.total}</p>
+                                                        <span style={{
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.25rem 0.75rem',
+                                                            borderRadius: '12px',
+                                                            background: order.status === 'pending' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                                                            color: order.status === 'pending' ? '#ef4444' : '#10b981',
+                                                            fontWeight: 600,
+                                                            display: 'inline-block',
+                                                            marginTop: '0.25rem'
+                                                        }}>
+                                                            {order.status}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </motion.div>
+                                    </motion.div>
+                                </>
+                            } />
+
+                            <Route path="/admin/products" element={
                                 <section className="dashboard-section glass-container">
                                     <div className="section-header">
                                         <Package className="text-accent" size={20} />
