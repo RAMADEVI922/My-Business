@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { User, Lock, LogIn, ChevronRight, ArrowLeft, ShieldCheck, Plus, Package, IndianRupee, Image as ImageIcon, Trash2, LayoutDashboard, LogOut, Upload, Mail, ShoppingCart, UserPlus, Home, ListOrdered, Eye, EyeOff, Phone, Search } from 'lucide-react';
-import { getProducts, saveProduct, removeProduct, getAdmin, getAdminByEmail, updateAdminPassword, saveCustomer, getCustomer, uploadToS3, saveOrder, getOrders, updateOrderStatus, getOrdersByEmail, sendOrderNotification, saveOTP, verifyOTP, sendPasswordResetEmail } from './aws-config';
+import { getProducts, saveProduct, removeProduct, getAdmin, getAdminByEmail, updateAdminPassword, saveCustomer, getCustomer, uploadToS3, saveOrder, getOrders, updateOrderStatus, getOrdersByEmail, sendOrderNotification, saveOTP, verifyOTP, sendPasswordResetEmail, proposeNewDeliveryDate, acceptProposedDate, rejectProposedDate, sendRescheduleProposalEmail, sendRescheduleAcceptedEmail } from './aws-config';
 import AdminNavbar from './components/AdminNavbar';
 import DeliveryCalendar from './components/DeliveryCalendar';
 
@@ -28,6 +28,12 @@ function App() {
     const [resetOTP, setResetOTP] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    
+    // Reschedule states
+    const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+    const [rescheduleOrder, setRescheduleOrder] = useState(null);
+    const [proposedDate, setProposedDate] = useState('');
+    const [rescheduleReason, setRescheduleReason] = useState('');
     const [resetLoading, setResetLoading] = useState(false);
 
     // Recommendation System States
@@ -1465,24 +1471,58 @@ function App() {
                                 </div>
                             ) : (
                                 myOrders.map(order => (
-                                    <div key={order.orderId} className="glass-container" style={{ padding: '20px', borderLeft: `5px solid ${order.status === 'pending' ? '#f59e0b' : order.status === 'accepted' ? '#22c55e' : order.status === 'Cancelled by Customer' ? '#6b7280' : '#ef4444'}` }}>
+                                    <div key={order.orderId} className="glass-container" style={{ padding: '20px', borderLeft: `5px solid ${order.status === 'pending' ? '#f59e0b' : order.status === 'pending-reschedule' ? '#f59e0b' : order.status === 'accepted' ? '#22c55e' : order.status === 'Cancelled by Customer' ? '#6b7280' : '#ef4444'}` }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
-                                            <div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', flexWrap: 'wrap' }}>
                                                     <span className="order-id-highlight" style={{ fontSize: '0.9rem' }}>{order.orderId}</span>
                                                     <span style={{
                                                         padding: '4px 10px',
                                                         borderRadius: '20px',
                                                         fontSize: '0.75rem',
                                                         fontWeight: 700,
-                                                        background: order.status === 'pending' ? '#fef3c7' : order.status === 'accepted' ? '#dcfce7' : order.status === 'Cancelled by Customer' ? '#f3f4f6' : '#fee2e2',
-                                                        color: order.status === 'pending' ? '#92400e' : order.status === 'accepted' ? '#166534' : order.status === 'Cancelled by Customer' ? '#374151' : '#991b1b'
+                                                        background: order.status === 'pending' ? '#fef3c7' : order.status === 'pending-reschedule' ? '#fef3c7' : order.status === 'accepted' ? '#dcfce7' : order.status === 'Cancelled by Customer' ? '#f3f4f6' : '#fee2e2',
+                                                        color: order.status === 'pending' ? '#92400e' : order.status === 'pending-reschedule' ? '#92400e' : order.status === 'accepted' ? '#166534' : order.status === 'Cancelled by Customer' ? '#374151' : '#991b1b'
                                                     }}>
-                                                        {order.status.toUpperCase()}
+                                                        {order.status === 'pending-reschedule' ? 'RESCHEDULE PROPOSED' : order.status.toUpperCase()}
                                                     </span>
                                                 </div>
                                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>Ordered on: {new Date(order.createdAt).toLocaleDateString()}</p>
                                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0 0' }}>Deliver to: {order.address}</p>
+                                                
+                                                {/* Reschedule Proposal Notice */}
+                                                {order.status === 'pending-reschedule' && order.proposedDeliveryDate && (
+                                                    <div style={{ 
+                                                        marginTop: '12px', 
+                                                        padding: '12px', 
+                                                        background: 'rgba(245, 158, 11, 0.1)', 
+                                                        borderRadius: '8px',
+                                                        border: '1px solid rgba(245, 158, 11, 0.3)'
+                                                    }}>
+                                                        <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', margin: '0 0 8px' }}>
+                                                            📅 New Delivery Date Proposed
+                                                        </p>
+                                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0' }}>
+                                                            <strong>Reason:</strong> {order.rescheduleReason}
+                                                        </p>
+                                                        <div style={{ display: 'flex', gap: '12px', marginTop: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.75rem', color: '#888', margin: 0 }}>Original Date</p>
+                                                                <p style={{ fontSize: '0.85rem', color: '#dc2626', margin: '2px 0', textDecoration: 'line-through' }}>
+                                                                    {new Date(order.deliveryDate).toLocaleDateString()}
+                                                                </p>
+                                                            </div>
+                                                            <span style={{ fontSize: '1.2rem', color: '#888' }}>→</span>
+                                                            <div>
+                                                                <p style={{ fontSize: '0.75rem', color: '#888', margin: 0 }}>New Date</p>
+                                                                <p style={{ fontSize: '0.85rem', color: '#16a34a', margin: '2px 0', fontWeight: 700 }}>
+                                                                    {new Date(order.proposedDeliveryDate).toLocaleDateString()}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                                 <div style={{ marginTop: '12px' }}>
                                                     <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>Items:</p>
                                                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
@@ -1493,6 +1533,67 @@ function App() {
                                             <div style={{ textAlign: 'right' }}>
                                                 <p style={{ fontSize: '0.85rem', color: '#888', margin: 0 }}>Total Amount</p>
                                                 <p className="total-highlight" style={{ fontSize: '1.4rem', margin: 0 }}>₹{order.total}</p>
+                                                
+                                                {/* Reschedule Response Buttons */}
+                                                {order.status === 'pending-reschedule' && (
+                                                    <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (window.confirm(`Accept new delivery date: ${new Date(order.proposedDeliveryDate).toLocaleDateString()}?`)) {
+                                                                    const success = await acceptProposedDate(order.orderId);
+                                                                    if (success) {
+                                                                        const updatedOrder = { ...order, deliveryDate: order.proposedDeliveryDate };
+                                                                        await sendRescheduleAcceptedEmail(order.customerEmail, updatedOrder);
+                                                                        alert('New delivery date confirmed!');
+                                                                        const o = await getOrdersByEmail(currentUser?.email || '');
+                                                                        setMyOrders(o);
+                                                                    } else {
+                                                                        alert('Failed to accept new date');
+                                                                    }
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                background: '#16a34a',
+                                                                border: 'none',
+                                                                color: 'white',
+                                                                borderRadius: '8px',
+                                                                padding: '8px 16px',
+                                                                cursor: 'pointer',
+                                                                fontWeight: 700,
+                                                                fontSize: '0.85rem'
+                                                            }}
+                                                        >
+                                                            ✓ Accept New Date
+                                                        </button>
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (window.confirm('Reject the proposed date? This will cancel your order.')) {
+                                                                    const success = await rejectProposedDate(order.orderId);
+                                                                    if (success) {
+                                                                        alert('Order cancelled. You can place a new order anytime.');
+                                                                        const o = await getOrdersByEmail(currentUser?.email || '');
+                                                                        setMyOrders(o);
+                                                                    } else {
+                                                                        alert('Failed to reject proposal');
+                                                                    }
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                background: 'none',
+                                                                border: '1.5px solid #dc2626',
+                                                                color: '#dc2626',
+                                                                borderRadius: '8px',
+                                                                padding: '8px 16px',
+                                                                cursor: 'pointer',
+                                                                fontWeight: 700,
+                                                                fontSize: '0.85rem'
+                                                            }}
+                                                        >
+                                                            ✗ Reject & Cancel
+                                                        </button>
+                                                    </div>
+                                                )}
+
                                                 {order.status === 'pending' && (
                                                     <button
                                                         onClick={() => handleCancelOrder(order)}
@@ -2103,17 +2204,25 @@ function App() {
                                                                     {order.status.toUpperCase()}
                                                                 </span>
                                                                 {order.status === 'pending' && (
-                                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                                         <button onClick={async () => {
                                                                             await updateOrderStatus(order.orderId, 'accepted');
                                                                             await sendOrderNotification(order.customerEmail, 'accepted', order);
                                                                             const o = await getOrders(); setOrders(o);
-                                                                        }} style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600 }}>✓ Accept</button>
+                                                                        }} style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>✓ Accept</button>
+                                                                        <button onClick={() => {
+                                                                            setRescheduleOrder(order);
+                                                                            setProposedDate('');
+                                                                            setRescheduleReason('');
+                                                                            setShowRescheduleModal(true);
+                                                                        }} style={{ background: '#f59e0b', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>📅 Reschedule</button>
                                                                         <button onClick={async () => {
-                                                                            await updateOrderStatus(order.orderId, 'cancelled');
-                                                                            await sendOrderNotification(order.customerEmail, 'cancelled', order);
-                                                                            const o = await getOrders(); setOrders(o);
-                                                                        }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600 }}>✗ Cancel</button>
+                                                                            if (window.confirm('Cancel this order permanently? Consider using Reschedule instead to propose a new date.')) {
+                                                                                await updateOrderStatus(order.orderId, 'cancelled');
+                                                                                await sendOrderNotification(order.customerEmail, 'cancelled', order);
+                                                                                const o = await getOrders(); setOrders(o);
+                                                                            }
+                                                                        }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>✗ Cancel</button>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -2313,6 +2422,140 @@ function App() {
                                                 </div>
                                             );
                                         })()}
+                                    </AnimatePresence>
+
+                                    {/* Reschedule Modal */}
+                                    <AnimatePresence>
+                                        {showRescheduleModal && rescheduleOrder && (
+                                            <div className="modal-overlay" onClick={() => setShowRescheduleModal(false)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="glass-container"
+                                                    style={{ width: '100%', maxWidth: '550px', padding: '28px', position: 'relative' }}
+                                                >
+                                                    <button
+                                                        onClick={() => setShowRescheduleModal(false)}
+                                                        style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '1.2rem' }}
+                                                    >✕</button>
+                                                    
+                                                    <h3 style={{ borderBottom: '2px solid #f59e0b', paddingBottom: '12px', marginBottom: '20px', color: '#f59e0b' }}>
+                                                        📅 Propose New Delivery Date
+                                                    </h3>
+
+                                                    <div style={{ background: 'rgba(245, 158, 11, 0.1)', borderRadius: '8px', padding: '16px', marginBottom: '20px', borderLeft: '4px solid #f59e0b' }}>
+                                                        <p style={{ margin: '4px 0', fontSize: '0.9rem' }}><strong>Order ID:</strong> {rescheduleOrder.orderId}</p>
+                                                        <p style={{ margin: '4px 0', fontSize: '0.9rem' }}><strong>Customer:</strong> {rescheduleOrder.customerEmail}</p>
+                                                        <p style={{ margin: '4px 0', fontSize: '0.9rem' }}><strong>Current Delivery Date:</strong> {new Date(rescheduleOrder.deliveryDate).toLocaleDateString()}</p>
+                                                        <p style={{ margin: '4px 0', fontSize: '0.9rem' }}><strong>Total:</strong> ₹{rescheduleOrder.total}</p>
+                                                    </div>
+
+                                                    <div style={{ marginBottom: '20px' }}>
+                                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem' }}>
+                                                            Reason for Rescheduling <span style={{ color: '#ef4444' }}>*</span>
+                                                        </label>
+                                                        <select
+                                                            value={rescheduleReason}
+                                                            onChange={(e) => setRescheduleReason(e.target.value)}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '12px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid rgba(255,255,255,0.2)',
+                                                                background: '#1a1a1a',
+                                                                color: '#ffffff',
+                                                                fontSize: '0.9rem',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            <option value="" style={{ background: '#1a1a1a', color: '#888' }}>Select a reason...</option>
+                                                            <option value="Product unavailable" style={{ background: '#1a1a1a', color: '#ffffff' }}>Product unavailable</option>
+                                                            <option value="Insufficient stock" style={{ background: '#1a1a1a', color: '#ffffff' }}>Insufficient stock</option>
+                                                            <option value="Delivery capacity full" style={{ background: '#1a1a1a', color: '#ffffff' }}>Delivery capacity full</option>
+                                                            <option value="Weather conditions" style={{ background: '#1a1a1a', color: '#ffffff' }}>Weather conditions</option>
+                                                            <option value="Other operational reasons" style={{ background: '#1a1a1a', color: '#ffffff' }}>Other operational reasons</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div style={{ marginBottom: '24px' }}>
+                                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, fontSize: '0.9rem' }}>
+                                                            Proposed New Delivery Date <span style={{ color: '#ef4444' }}>*</span>
+                                                        </label>
+                                                        <input
+                                                            type="date"
+                                                            value={proposedDate}
+                                                            onChange={(e) => setProposedDate(e.target.value)}
+                                                            min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                                                            style={{
+                                                                width: '100%',
+                                                                padding: '12px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid rgba(255,255,255,0.2)',
+                                                                background: '#1a1a1a',
+                                                                color: '#ffffff',
+                                                                fontSize: '0.9rem',
+                                                                colorScheme: 'dark'
+                                                            }}
+                                                        />
+                                                        <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '6px' }}>
+                                                            Customer will receive an email to accept or reject this new date
+                                                        </p>
+                                                    </div>
+
+                                                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                                                        <button
+                                                            onClick={() => setShowRescheduleModal(false)}
+                                                            style={{
+                                                                padding: '10px 20px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid rgba(255,255,255,0.2)',
+                                                                background: 'rgba(255,255,255,0.05)',
+                                                                color: 'var(--text-primary)',
+                                                                cursor: 'pointer',
+                                                                fontWeight: 600,
+                                                                fontSize: '0.9rem'
+                                                            }}
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (!proposedDate || !rescheduleReason) {
+                                                                    alert('Please fill in all required fields');
+                                                                    return;
+                                                                }
+                                                                
+                                                                const success = await proposeNewDeliveryDate(rescheduleOrder.orderId, proposedDate, rescheduleReason);
+                                                                if (success) {
+                                                                    await sendRescheduleProposalEmail(rescheduleOrder.customerEmail, rescheduleOrder, proposedDate, rescheduleReason);
+                                                                    alert('Reschedule proposal sent to customer!');
+                                                                    setShowRescheduleModal(false);
+                                                                    const o = await getOrders();
+                                                                    setOrders(o);
+                                                                } else {
+                                                                    alert('Failed to send reschedule proposal');
+                                                                }
+                                                            }}
+                                                            disabled={!proposedDate || !rescheduleReason}
+                                                            style={{
+                                                                padding: '10px 20px',
+                                                                borderRadius: '8px',
+                                                                border: 'none',
+                                                                background: (!proposedDate || !rescheduleReason) ? '#666' : '#f59e0b',
+                                                                color: 'white',
+                                                                cursor: (!proposedDate || !rescheduleReason) ? 'not-allowed' : 'pointer',
+                                                                fontWeight: 600,
+                                                                fontSize: '0.9rem'
+                                                            }}
+                                                        >
+                                                            📅 Send Proposal
+                                                        </button>
+                                                    </div>
+                                                </motion.div>
+                                            </div>
+                                        )}
                                     </AnimatePresence>
                                 </section>
                             } />
