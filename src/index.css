@@ -1513,3 +1513,813 @@
 .progress-step.completed .step-icon-wrapper {
   animation: success-pop 0.5s ease;
 }
+
+
+/* ========================================
+   COMPREHENSIVE RESPONSIVE DESIGN
+   ======================================== */
+
+/* Extra Large Devices (Large Desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .dashboard-container {
+    max-width: 1400px;
+  }
+
+  .landing-container {
+    max-width: 1400px;
+  }
+
+  .welcome-title {
+    font-size: 5rem;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large Devices (Desktops, 992px to 1399px) */
+@media (max-width: 1399px) {
+  .dashboard-container {
+    max-width: 1200px;
+  }
+
+  .landing-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Medium Devices (Tablets, 768px to 991px) */
+@media (max-width: 991px) {
+  /* Navigation */
+  .admin-nav,
+  .main-nav {
+    left: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .nav-links {
+    gap: 0.75rem;
+  }
+
+  .admin-nav .nav-links a,
+  .main-nav .nav-links button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .nav-logo {
+    font-size: 1rem !important;
+  }
+
+  /* Dashboard */
+  .dashboard-container {
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Landing Page */
+  .landing-container {
+    padding: 3rem 1.5rem;
+  }
+
+  .landing-cards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .landing-card {
+    padding: 2rem;
+  }
+
+  /* Welcome Screen */
+  .welcome-title {
+    font-size: 3rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .welcome-logo-box {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Forms */
+  .customer-reg-form {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-reg-container {
+    padding: 1.5rem;
+    margin: 1.5rem;
+  }
+
+  /* Auth Card */
+  .auth-card {
+    padding: 2rem;
+    max-width: 90%;
+  }
+
+  /* Product Grid */
+  .dashboard-grid[style*="repeat(auto-fill, minmax(280px, 1fr))"] {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+  }
+
+  /* Recommendations */
+  .recommendations-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+/* Small Devices (Landscape Phones, 576px to 767px) */
+@media (max-width: 767px) {
+  /* Typography */
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .title-sm {
+    font-size: 1.25rem;
+  }
+
+  /* Navigation */
+  .admin-nav,
+  .main-nav {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .admin-nav .nav-links a,
+  .main-nav .nav-links button {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+    flex: 1 1 auto;
+    min-width: fit-content;
+  }
+
+  .nav-logo {
+    font-size: 0.95rem !important;
+  }
+
+  .nav-cart-btn {
+    position: relative;
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  /* Dashboard */
+  .dashboard-container,
+  .landing-container,
+  .customer-reg-container,
+  .cart-view,
+  .order-view {
+    padding-top: 8rem !important;
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  /* Landing Page */
+  .landing-container {
+    padding: 2rem 1rem;
+  }
+
+  .landing-card {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .card-desc {
+    font-size: 0.9rem;
+  }
+
+  /* Welcome Screen */
+  .welcome-title {
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+  }
+
+  .welcome-subtitle {
+    font-size: 1rem;
+    margin: 1rem 0 2rem;
+  }
+
+  .welcome-logo-box {
+    width: 70px;
+    height: 70px;
+  }
+
+  .btn-primary {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+
+  /* Forms */
+  .customer-reg-container {
+    margin: 1rem;
+    padding: 1.25rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+    max-width: 95%;
+  }
+
+  .input-field {
+    padding: 10px 14px 10px 40px;
+    font-size: 0.9rem;
+  }
+
+  /* Product Grid */
+  .dashboard-grid[style*="repeat(auto-fill, minmax(280px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  .product-item {
+    padding: 1.25rem !important;
+  }
+
+  /* Search Bar */
+  .search-bar-container {
+    margin: 0 0 1.5rem !important;
+    max-width: 100% !important;
+  }
+
+  .search-input {
+    padding: 0.85rem 0.85rem 0.85rem 2.5rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Cart */
+  .cart-view {
+    padding: 1rem !important;
+  }
+
+  .cart-title-highlight {
+    font-size: 1.5rem;
+  }
+
+  /* Recommendations */
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recommendations-scroll {
+    gap: 0.75rem;
+  }
+
+  .recommendation-card {
+    min-width: 180px !important;
+    max-width: 180px !important;
+    padding: 0.85rem !important;
+  }
+
+  /* Order View */
+  .order-view {
+    padding: 1rem !important;
+  }
+
+  /* Admin Dashboard Cards */
+  .glass-container[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Buttons */
+  .admin-access-btn {
+    padding: 10px 24px !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* File Upload */
+  .file-label-btn {
+    padding: 12px 18px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Extra Small Devices (Portrait Phones, less than 576px) */
+@media (max-width: 575px) {
+  /* Root Adjustments */
+  :root {
+    font-size: 14px;
+  }
+
+  /* Typography */
+  .title {
+    font-size: 1.35rem;
+  }
+
+  .welcome-title {
+    font-size: 2rem;
+    letter-spacing: 0;
+  }
+
+  .welcome-subtitle {
+    font-size: 0.95rem;
+  }
+
+  /* Navigation */
+  .admin-nav,
+  .main-nav {
+    padding: 0.5rem;
+  }
+
+  .nav-links {
+    gap: 0.35rem;
+  }
+
+  .admin-nav .nav-links a,
+  .main-nav .nav-links button {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .nav-logo {
+    font-size: 0.85rem !important;
+    gap: 6px !important;
+  }
+
+  .nav-logo svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Dashboard */
+  .dashboard-container {
+    padding: 0.75rem;
+  }
+
+  .dashboard-section {
+    padding: 1.25rem;
+  }
+
+  /* Landing Page */
+  .landing-container {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .landing-card {
+    padding: 1.25rem;
+  }
+
+  .card-icon-box {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .card-icon-box svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Welcome Screen */
+  .welcome-logo-box {
+    width: 60px;
+    height: 60px;
+  }
+
+  .welcome-logo-box svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .btn-primary {
+    padding: 10px 18px;
+    font-size: 0.85rem;
+  }
+
+  /* Forms */
+  .customer-reg-container {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 1.25rem;
+  }
+
+  .input-field {
+    padding: 9px 12px 9px 38px;
+    font-size: 0.85rem;
+  }
+
+  .input-icon {
+    left: 0.75rem;
+  }
+
+  .input-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Product Cards */
+  .product-item {
+    padding: 1rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .product-img-wrapper {
+    height: 160px !important;
+  }
+
+  .product-name {
+    font-size: 1.1rem !important;
+  }
+
+  .product-price {
+    font-size: 1.25rem !important;
+  }
+
+  /* Search Bar */
+  .search-input {
+    padding: 0.75rem 0.75rem 0.75rem 2.25rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .search-input + button {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 1rem !important;
+  }
+
+  /* Cart */
+  .cart-view {
+    padding: 0.75rem !important;
+  }
+
+  .glass-container[style*="display: flex"] {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .glass-container[style*="display: flex"] > div[style*="width: 72px"] {
+    width: 100% !important;
+    height: 120px !important;
+  }
+
+  /* Recommendations */
+  .recommendation-card {
+    min-width: 160px !important;
+    max-width: 160px !important;
+    padding: 0.75rem !important;
+  }
+
+  .recommendation-card h4 {
+    font-size: 0.9rem !important;
+  }
+
+  .recommendation-card .price-amount {
+    font-size: 1rem !important;
+  }
+
+  .recommendation-card button {
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Order View */
+  .order-view {
+    padding: 0.75rem !important;
+  }
+
+  .glass-container {
+    padding: 1rem !important;
+  }
+
+  /* Buttons */
+  .admin-access-btn {
+    padding: 8px 20px !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 1px !important;
+  }
+
+  .delete-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Modal/Popup Adjustments */
+  .flex-center-all {
+    padding: 1rem;
+  }
+
+  /* File Upload */
+  .file-label-btn {
+    padding: 10px 16px;
+    font-size: 0.8rem;
+  }
+
+  .file-label-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Order Tracking */
+  .step-icon-wrapper {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .step-icon-wrapper svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .step-label {
+    font-size: 0.8rem;
+  }
+
+  /* Admin Dashboard Summary Cards */
+  div[style*="gridTemplateColumns: repeat(auto-fit"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .welcome-screen {
+    padding: 1rem;
+  }
+
+  .welcome-title {
+    font-size: 2rem;
+  }
+
+  .welcome-subtitle {
+    font-size: 0.9rem;
+    margin: 0.75rem 0 1.5rem;
+  }
+
+  .welcome-logo-box {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 1rem;
+  }
+
+  .btn-primary {
+    padding: 8px 16px;
+  }
+
+  .flex-center-all {
+    min-height: auto;
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 1rem;
+  }
+
+  .dashboard-container,
+  .landing-container,
+  .customer-reg-container,
+  .cart-view,
+  .order-view {
+    padding-top: 5rem !important;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase touch targets */
+  .btn-primary,
+  .btn-secondary,
+  .link-text,
+  .delete-btn,
+  .logout-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .admin-nav .nav-links a,
+  .main-nav .nav-links button {
+    min-height: 40px;
+  }
+
+  /* Remove hover effects on touch devices */
+  .landing-card:hover {
+    transform: none;
+  }
+
+  .btn-primary:hover {
+    transform: none;
+  }
+
+  .recommendation-card:hover {
+    transform: none;
+  }
+
+  /* Add active states instead */
+  .btn-primary:active {
+    transform: scale(0.95);
+  }
+
+  .landing-card:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .admin-nav,
+  .main-nav,
+  .btn-primary,
+  .btn-secondary,
+  .delete-btn,
+  .logout-btn {
+    display: none !important;
+  }
+
+  .dashboard-container,
+  .landing-container,
+  .customer-reg-container,
+  .cart-view,
+  .order-view {
+    padding-top: 1rem !important;
+  }
+
+  .glass-container {
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .glass-container {
+    border: 2px solid var(--accent-color);
+  }
+
+  .btn-primary {
+    border: 2px solid white;
+  }
+
+  .input-field:focus {
+    outline: 3px solid var(--accent-color);
+  }
+}
+
+/* Dark Mode Adjustments (if needed) */
+@media (prefers-color-scheme: dark) {
+  /* Already dark by default, but can add overrides here */
+}
+
+/* Responsive Utility Classes */
+.hide-mobile {
+  display: block;
+}
+
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+.hide-tablet {
+  display: block;
+}
+
+.show-tablet {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .hide-tablet {
+    display: none !important;
+  }
+
+  .show-tablet {
+    display: block !important;
+  }
+}
+
+/* Responsive Text Utilities */
+.text-responsive {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+.title-responsive {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+/* Responsive Spacing */
+.p-responsive {
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.m-responsive {
+  margin: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+/* Container Queries (Modern Browsers) */
+@container (max-width: 400px) {
+  .product-item {
+    padding: 0.75rem;
+  }
+}
+
+/* Responsive Images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive Tables */
+@media (max-width: 767px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* Responsive Flexbox Utilities */
+.flex-wrap-mobile {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 767px) {
+  .flex-wrap-mobile {
+    flex-wrap: wrap;
+  }
+}
+
+/* Responsive Grid Utilities */
+.grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 767px) {
+  .grid-responsive {
+    grid-template-columns: 1fr;
+  }
+}
