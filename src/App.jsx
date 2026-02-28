@@ -2131,57 +2131,188 @@ function App() {
                                     </div>
 
                                     <AnimatePresence>
-                                        {selectedDeliveryDate && (
-                                            <div className="modal-overlay" onClick={() => setSelectedDeliveryDate(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                                                <motion.div
-                                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="glass-container"
-                                                    style={{ width: '100%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto', padding: '24px', position: 'relative' }}
-                                                >
-                                                    <button
-                                                        onClick={() => setSelectedDeliveryDate(null)}
-                                                        style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '1.2rem' }}
-                                                    >✕</button>
-                                                    <h3 style={{ borderBottom: '2px solid var(--accent-color)', paddingBottom: '10px', marginBottom: '20px' }}>
-                                                        Deliveries for {new Date(selectedDeliveryDate).toLocaleDateString()}
-                                                    </h3>
-                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                        {orders.filter(o => o.deliveryDate === selectedDeliveryDate).length > 0 ? (
-                                                            orders.filter(o => o.deliveryDate === selectedDeliveryDate).map(order => (
-                                                                <div key={order.orderId} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                                                        <span className="order-id-highlight" style={{ fontSize: '0.9rem' }}>{order.orderId}</span>
-                                                                        <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: '10px', background: order.status === 'confirmed' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 152, 0, 0.2)', color: order.status === 'confirmed' ? '#81c784' : '#ffb74d' }}>
-                                                                            {order.status}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div style={{ background: 'rgba(194, 120, 53, 0.1)', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', borderLeft: '4px solid var(--accent-color)' }}>
-                                                                        <p style={{ fontWeight: 800, fontSize: '1.1rem', margin: 0, color: 'var(--accent-color)' }}>{order.customerName}</p>
-                                                                        <p style={{ fontSize: '0.85rem', color: '#888', margin: '2px 0 0' }}>Phone: {order.phone}</p>
-                                                                    </div>
-                                                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginBottom: '10px' }}>
-                                                                        <p style={{ fontSize: '0.85rem', fontWeight: 600, margin: '0 0 5px' }}>Products:</p>
-                                                                        {order.items?.map((item, idx) => (
-                                                                            <p key={idx} style={{ fontSize: '0.85rem', color: '#ccc', margin: '0 0 2px' }}>• {item.name} ×{item.qty}</p>
-                                                                        ))}
-                                                                    </div>
-                                                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px' }}>
-                                                                        <p style={{ fontSize: '0.85rem', fontWeight: 600, margin: '0 0 5px' }}>Delivery Address:</p>
-                                                                        <p style={{ fontSize: '0.85rem', color: '#888', margin: 0 }}>{order.address}</p>
-                                                                    </div>
-                                                                    <p style={{ marginTop: '15px', textAlign: 'right', color: 'var(--accent-color)', fontWeight: 700 }}>Total: ₹{order.total}</p>
-                                                                </div>
-                                                            ))
+                                        {selectedDeliveryDate && (() => {
+                                            const dateOrders = orders.filter(o => o.deliveryDate === selectedDeliveryDate);
+                                            const confirmedOrders = dateOrders.filter(o => o.status === 'accepted');
+                                            const cancelledOrders = dateOrders.filter(o => o.status === 'cancelled');
+                                            const customerCancelledOrders = dateOrders.filter(o => o.status === 'Cancelled by Customer');
+                                            
+                                            return (
+                                                <div className="modal-overlay" onClick={() => setSelectedDeliveryDate(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="glass-container"
+                                                        style={{ width: '100%', maxWidth: '600px', maxHeight: '85vh', overflowY: 'auto', padding: '24px', position: 'relative' }}
+                                                    >
+                                                        <button
+                                                            onClick={() => setSelectedDeliveryDate(null)}
+                                                            style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '1.2rem' }}
+                                                        >✕</button>
+                                                        <h3 style={{ borderBottom: '2px solid var(--accent-color)', paddingBottom: '10px', marginBottom: '20px' }}>
+                                                            Orders for {new Date(selectedDeliveryDate).toLocaleDateString()}
+                                                        </h3>
+
+                                                        {dateOrders.length === 0 ? (
+                                                            <p style={{ textAlign: 'center', color: '#888', padding: '20px' }}>No orders scheduled for this day.</p>
                                                         ) : (
-                                                            <p style={{ textAlign: 'center', color: '#888' }}>No deliveries scheduled for this day.</p>
+                                                            <>
+                                                                {/* Confirmed Orders Section */}
+                                                                {confirmedOrders.length > 0 && (
+                                                                    <div style={{ marginBottom: '24px' }}>
+                                                                        <div style={{ 
+                                                                            display: 'flex', 
+                                                                            alignItems: 'center', 
+                                                                            gap: '8px', 
+                                                                            marginBottom: '12px',
+                                                                            padding: '8px 12px',
+                                                                            background: 'rgba(34, 197, 94, 0.1)',
+                                                                            borderRadius: '8px',
+                                                                            borderLeft: '4px solid #22c55e'
+                                                                        }}>
+                                                                            <h4 style={{ margin: 0, color: '#22c55e', fontSize: '1rem', fontWeight: 700 }}>
+                                                                                ✓ Confirmed Orders ({confirmedOrders.length})
+                                                                            </h4>
+                                                                        </div>
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                                            {confirmedOrders.map((order, index) => (
+                                                                                <div key={order.orderId} style={{ background: 'rgba(34, 197, 94, 0.05)', borderRadius: '10px', padding: '16px', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+                                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
+                                                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                                            <span style={{ 
+                                                                                                background: '#22c55e', 
+                                                                                                color: 'white', 
+                                                                                                borderRadius: '50%', 
+                                                                                                width: '28px', 
+                                                                                                height: '28px', 
+                                                                                                display: 'flex', 
+                                                                                                alignItems: 'center', 
+                                                                                                justifyContent: 'center',
+                                                                                                fontWeight: 700,
+                                                                                                fontSize: '0.9rem'
+                                                                                            }}>
+                                                                                                {index + 1}
+                                                                                            </span>
+                                                                                            <span className="order-id-highlight" style={{ fontSize: '0.9rem' }}>{order.orderId}</span>
+                                                                                        </div>
+                                                                                        <span style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e', fontWeight: 700 }}>
+                                                                                            CONFIRMED
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div style={{ background: 'rgba(194, 120, 53, 0.1)', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', borderLeft: '4px solid var(--accent-color)' }}>
+                                                                                        <p style={{ fontWeight: 800, fontSize: '1rem', margin: 0, color: 'var(--accent-color)' }}>{order.customerEmail}</p>
+                                                                                        <p style={{ fontSize: '0.85rem', color: '#888', margin: '2px 0 0' }}>Phone: {order.phone}</p>
+                                                                                    </div>
+                                                                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginBottom: '10px' }}>
+                                                                                        <p style={{ fontSize: '0.85rem', fontWeight: 600, margin: '0 0 5px' }}>Products:</p>
+                                                                                        {order.items?.map((item, idx) => (
+                                                                                            <p key={idx} style={{ fontSize: '0.85rem', color: '#ccc', margin: '0 0 2px' }}>• {item.name} ×{item.qty}</p>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px' }}>
+                                                                                        <p style={{ fontSize: '0.85rem', fontWeight: 600, margin: '0 0 5px' }}>Delivery Address:</p>
+                                                                                        <p style={{ fontSize: '0.85rem', color: '#888', margin: 0 }}>{order.address}</p>
+                                                                                    </div>
+                                                                                    <p style={{ marginTop: '12px', textAlign: 'right', color: 'var(--accent-color)', fontWeight: 700, fontSize: '1.1rem' }}>Total: ₹{order.total}</p>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Cancelled Orders Section (by Admin) */}
+                                                                {cancelledOrders.length > 0 && (
+                                                                    <div style={{ marginBottom: '24px' }}>
+                                                                        <div style={{ 
+                                                                            display: 'flex', 
+                                                                            alignItems: 'center', 
+                                                                            gap: '8px', 
+                                                                            marginBottom: '12px',
+                                                                            padding: '8px 12px',
+                                                                            background: 'rgba(239, 68, 68, 0.1)',
+                                                                            borderRadius: '8px',
+                                                                            borderLeft: '4px solid #ef4444'
+                                                                        }}>
+                                                                            <h4 style={{ margin: 0, color: '#ef4444', fontSize: '1rem', fontWeight: 700 }}>
+                                                                                ✗ Cancelled Orders ({cancelledOrders.length})
+                                                                            </h4>
+                                                                        </div>
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                                            {cancelledOrders.map((order) => (
+                                                                                <div key={order.orderId} style={{ background: 'rgba(239, 68, 68, 0.05)', borderRadius: '10px', padding: '16px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                                                                        <span className="order-id-highlight" style={{ fontSize: '0.9rem' }}>{order.orderId}</span>
+                                                                                        <span style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', fontWeight: 700 }}>
+                                                                                            CANCELLED
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div style={{ background: 'rgba(194, 120, 53, 0.1)', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', borderLeft: '4px solid #ef4444' }}>
+                                                                                        <p style={{ fontWeight: 800, fontSize: '1rem', margin: 0, color: '#ef4444' }}>{order.customerEmail}</p>
+                                                                                        <p style={{ fontSize: '0.85rem', color: '#888', margin: '2px 0 0' }}>Phone: {order.phone}</p>
+                                                                                    </div>
+                                                                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginBottom: '10px' }}>
+                                                                                        <p style={{ fontSize: '0.85rem', fontWeight: 600, margin: '0 0 5px' }}>Products:</p>
+                                                                                        {order.items?.map((item, idx) => (
+                                                                                            <p key={idx} style={{ fontSize: '0.85rem', color: '#ccc', margin: '0 0 2px' }}>• {item.name} ×{item.qty}</p>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                    <p style={{ marginTop: '12px', textAlign: 'right', color: '#888', fontWeight: 700, fontSize: '1.1rem', textDecoration: 'line-through' }}>Total: ₹{order.total}</p>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Customer Cancelled Orders Section */}
+                                                                {customerCancelledOrders.length > 0 && (
+                                                                    <div style={{ marginBottom: '12px' }}>
+                                                                        <div style={{ 
+                                                                            display: 'flex', 
+                                                                            alignItems: 'center', 
+                                                                            gap: '8px', 
+                                                                            marginBottom: '12px',
+                                                                            padding: '8px 12px',
+                                                                            background: 'rgba(107, 114, 128, 0.1)',
+                                                                            borderRadius: '8px',
+                                                                            borderLeft: '4px solid #6b7280'
+                                                                        }}>
+                                                                            <h4 style={{ margin: 0, color: '#6b7280', fontSize: '1rem', fontWeight: 700 }}>
+                                                                                ⊘ Customer Cancelled Orders ({customerCancelledOrders.length})
+                                                                            </h4>
+                                                                        </div>
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                                            {customerCancelledOrders.map((order) => (
+                                                                                <div key={order.orderId} style={{ background: 'rgba(107, 114, 128, 0.05)', borderRadius: '10px', padding: '16px', border: '1px solid rgba(107, 114, 128, 0.3)' }}>
+                                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                                                                        <span className="order-id-highlight" style={{ fontSize: '0.9rem', opacity: 0.7 }}>{order.orderId}</span>
+                                                                                        <span style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '12px', background: 'rgba(107, 114, 128, 0.2)', color: '#6b7280', fontWeight: 700 }}>
+                                                                                            CUSTOMER CANCELLED
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div style={{ background: 'rgba(107, 114, 128, 0.1)', padding: '8px 12px', borderRadius: '8px', marginBottom: '10px', borderLeft: '4px solid #6b7280' }}>
+                                                                                        <p style={{ fontWeight: 800, fontSize: '1rem', margin: 0, color: '#6b7280' }}>{order.customerEmail}</p>
+                                                                                        <p style={{ fontSize: '0.85rem', color: '#888', margin: '2px 0 0' }}>Phone: {order.phone}</p>
+                                                                                    </div>
+                                                                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginBottom: '10px' }}>
+                                                                                        <p style={{ fontSize: '0.85rem', fontWeight: 600, margin: '0 0 5px' }}>Products:</p>
+                                                                                        {order.items?.map((item, idx) => (
+                                                                                            <p key={idx} style={{ fontSize: '0.85rem', color: '#ccc', margin: '0 0 2px', opacity: 0.7 }}>• {item.name} ×{item.qty}</p>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                    <p style={{ marginTop: '12px', textAlign: 'right', color: '#888', fontWeight: 700, fontSize: '1.1rem', textDecoration: 'line-through' }}>Total: ₹{order.total}</p>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </>
                                                         )}
-                                                    </div>
-                                                </motion.div>
-                                            </div>
-                                        )}
+                                                    </motion.div>
+                                                </div>
+                                            );
+                                        })()}
                                     </AnimatePresence>
                                 </section>
                             } />
