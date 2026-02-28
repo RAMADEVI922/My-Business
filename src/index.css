@@ -2323,3 +2323,5 @@ img {
     grid-template-columns: 1fr;
   }
 }
+
+/* Mobile fixes are loaded separately via mobile-fixes.css */

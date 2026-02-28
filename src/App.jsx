@@ -1908,42 +1908,6 @@ function App() {
                                                 )}
                                             </motion.div>
 
-                                            {/* Total Revenue Card */}
-                                            <motion.div
-                                                whileHover={{ scale: 1.03, y: -5 }}
-                                                className="glass-container"
-                                                style={{
-                                                    padding: '1.5rem',
-                                                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05))',
-                                                    border: '1.5px solid rgba(16, 185, 129, 0.3)',
-                                                    cursor: 'default'
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                                    <div style={{
-                                                        width: '50px',
-                                                        height: '50px',
-                                                        borderRadius: '12px',
-                                                        background: 'linear-gradient(135deg, #10b981, #059669)',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
-                                                    }}>
-                                                        <IndianRupee size={24} color="white" />
-                                                    </div>
-                                                </div>
-                                                <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.5rem 0' }}>
-                                                    ₹{orders.filter(o => o.status === 'accepted' || o.status === 'delivered').reduce((sum, order) => sum + (Number(order.total) || 0), 0).toFixed(0)}
-                                                </h3>
-                                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>
-                                                    Total Revenue
-                                                </p>
-                                                <p style={{ color: '#10b981', fontSize: '0.8rem', marginTop: '0.5rem', fontWeight: 600 }}>
-                                                    From {orders.filter(o => o.status === 'accepted' || o.status === 'delivered').length} completed orders
-                                                </p>
-                                            </motion.div>
-
                                             {/* Total Customers Card */}
                                             <motion.div
                                                 whileHover={{ scale: 1.03, y: -5 }}
