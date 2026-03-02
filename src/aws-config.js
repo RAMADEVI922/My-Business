@@ -367,7 +367,7 @@ export const updateOrderStatus = async (orderId, status, additionalFields = {}) 
             TableName: ordersTableName,
             Key: { orderId },
             UpdateExpression: updateExpression.join(', '),
-            ExpressionAttributeNames,
+            ExpressionAttributeNames: expressionAttributeNames,
             ExpressionAttributeValues: expressionAttributeValues,
         }));
         return true;

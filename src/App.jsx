@@ -1542,8 +1542,6 @@ function App() {
                                                                 if (window.confirm(`Accept new delivery date: ${new Date(order.proposedDeliveryDate).toLocaleDateString()}?`)) {
                                                                     const success = await acceptProposedDate(order.orderId);
                                                                     if (success) {
-                                                                        const updatedOrder = { ...order, deliveryDate: order.proposedDeliveryDate };
-                                                                        await sendRescheduleAcceptedEmail(order.customerEmail, updatedOrder);
                                                                         alert('New delivery date confirmed!');
                                                                         const o = await getOrdersByEmail(currentUser?.email || '');
                                                                         setMyOrders(o);
@@ -2206,9 +2204,19 @@ function App() {
                                                                 {order.status === 'pending' && (
                                                                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                                         <button onClick={async () => {
-                                                                            await updateOrderStatus(order.orderId, 'accepted');
-                                                                            await sendOrderNotification(order.customerEmail, 'accepted', order);
-                                                                            const o = await getOrders(); setOrders(o);
+                                                                            try {
+                                                                                const success = await updateOrderStatus(order.orderId, 'accepted');
+                                                                                if (success) {
+                                                                                    const o = await getOrders(); 
+                                                                                    setOrders(o);
+                                                                                    alert('Order accepted successfully!');
+                                                                                } else {
+                                                                                    alert('Failed to accept order. Please try again.');
+                                                                                }
+                                                                            } catch (error) {
+                                                                                console.error('Error accepting order:', error);
+                                                                                alert('Error accepting order: ' + error.message);
+                                                                            }
                                                                         }} style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>✓ Accept</button>
                                                                         <button onClick={() => {
                                                                             setRescheduleOrder(order);
@@ -2218,9 +2226,19 @@ function App() {
                                                                         }} style={{ background: '#f59e0b', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>📅 Reschedule</button>
                                                                         <button onClick={async () => {
                                                                             if (window.confirm('Cancel this order permanently? Consider using Reschedule instead to propose a new date.')) {
-                                                                                await updateOrderStatus(order.orderId, 'cancelled');
-                                                                                await sendOrderNotification(order.customerEmail, 'cancelled', order);
-                                                                                const o = await getOrders(); setOrders(o);
+                                                                                try {
+                                                                                    const success = await updateOrderStatus(order.orderId, 'cancelled');
+                                                                                    if (success) {
+                                                                                        const o = await getOrders(); 
+                                                                                        setOrders(o);
+                                                                                        alert('Order cancelled successfully!');
+                                                                                    } else {
+                                                                                        alert('Failed to cancel order. Please try again.');
+                                                                                    }
+                                                                                } catch (error) {
+                                                                                    console.error('Error cancelling order:', error);
+                                                                                    alert('Error cancelling order: ' + error.message);
+                                                                                }
                                                                             }
                                                                         }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>✗ Cancel</button>
                                                                     </div>
@@ -2527,15 +2545,19 @@ function App() {
                                                                     return;
                                                                 }
                                                                 
-                                                                const success = await proposeNewDeliveryDate(rescheduleOrder.orderId, proposedDate, rescheduleReason);
-                                                                if (success) {
-                                                                    await sendRescheduleProposalEmail(rescheduleOrder.customerEmail, rescheduleOrder, proposedDate, rescheduleReason);
-                                                                    alert('Reschedule proposal sent to customer!');
-                                                                    setShowRescheduleModal(false);
-                                                                    const o = await getOrders();
-                                                                    setOrders(o);
-                                                                } else {
-                                                                    alert('Failed to send reschedule proposal');
+                                                                try {
+                                                                    const success = await proposeNewDeliveryDate(rescheduleOrder.orderId, proposedDate, rescheduleReason);
+                                                                    if (success) {
+                                                                        alert('Reschedule proposal saved! (Email notification disabled - configure AWS SES to enable)');
+                                                                        setShowRescheduleModal(false);
+                                                                        const o = await getOrders();
+                                                                        setOrders(o);
+                                                                    } else {
+                                                                        alert('Failed to send reschedule proposal');
+                                                                    }
+                                                                } catch (error) {
+                                                                    console.error('Error sending reschedule proposal:', error);
+                                                                    alert('Error: ' + error.message);
                                                                 }
                                                             }}
                                                             disabled={!proposedDate || !rescheduleReason}
