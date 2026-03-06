@@ -9,7 +9,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate, onLogout })
                     <span>MyBusiness</span>
                 </div>
                 <div className="nav-links">
-                    <button onClick={() => onNavigate('contact-us')} className="nav-link bg-none border-none pointer">
+                    <button onClick={() => onNavigate('contact')} className="nav-link bg-none border-none pointer">
                         Contact Us
                     </button>
                     <button onClick={() => onNavigate('customer-login')} className="nav-link bg-none border-none pointer">
@@ -33,7 +33,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate, onLogout })
                 <button onClick={() => onNavigate('my-orders')} className="nav-link bg-none border-none pointer">
                     My Orders
                 </button>
-                <button onClick={() => onNavigate('contact-us')} className="nav-link bg-none border-none pointer">
+                <button onClick={() => onNavigate('contact')} className="nav-link bg-none border-none pointer">
                     Contact Us
                 </button>
                 <button 
@@ -46,8 +46,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate, onLogout })
                 </button>
                 <button 
                     onClick={onLogout} 
-                    className="nav-link bg-none border-none pointer" 
-                    style={{ color: '#dc2626' }}
+                    className="nav-link logout-nav-btn pointer"
                 >
                     Logout
                 </button>

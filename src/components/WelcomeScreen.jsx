@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ShoppingCart, ChevronRight } from 'lucide-react';
 
-export default function WelcomeScreen({ onGetStarted }) {
+export default function WelcomeScreen({ setView }) {
     return (
         <motion.div
             key="welcome"
@@ -40,7 +40,7 @@ export default function WelcomeScreen({ onGetStarted }) {
                 transition={{ delay: 0.8 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={onGetStarted}
+                onClick={() => setView('landing')}
                 className="btn-primary"
                 style={{ padding: '16px 40px', fontSize: '1.25rem' }}
             >
