@@ -1,76 +1,54 @@
 import { motion } from 'framer-motion';
 import { Image as ImageIcon } from 'lucide-react';
 
-export default function RecommendationSection({ 
-    recommendations, 
-    cart, 
-    onAddToCart, 
-    onViewProduct,
-    title = "✨ You May Also Like",
-    layout = "horizontal" // "horizontal" or "grid"
-}) {
-    if (recommendations.length === 0) return null;
-
-    const containerStyle = layout === "horizontal" 
-        ? {
-            display: 'flex',
-            gap: '1rem',
-            overflowX: 'auto',
-            paddingBottom: '1rem',
-            scrollBehavior: 'smooth'
-        }
-        : {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-            gap: '1.5rem'
-        };
-
-    const cardStyle = layout === "horizontal"
-        ? { minWidth: '200px', maxWidth: '200px' }
-        : {};
+function RecommendationSection({ products, cart, onAddToCart, onProductClick, title = "✨ Recommended For You" }) {
+    if (products.length === 0) return null;
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            style={{ marginTop: '3rem' }}
+            transition={{ delay: 0.4 }}
+            style={{ marginTop: '4rem' }}
         >
             <h3 style={{ 
-                fontSize: layout === "horizontal" ? '1.5rem' : '1.75rem', 
+                fontSize: '1.75rem', 
                 fontWeight: 700, 
                 color: 'var(--text-primary)', 
                 marginBottom: '1.5rem',
+                textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                justifyContent: layout === "grid" ? 'center' : 'flex-start'
+                justifyContent: 'center',
+                gap: '0.5rem'
             }}>
                 {title}
             </h3>
             
-            <div className="recommendations-scroll" style={containerStyle}>
-                {recommendations.map(product => {
+            <div className="recommendations-grid" style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                gap: '1.5rem'
+            }}>
+                {products.map(product => {
                     const cartItem = cart.find(i => i.id === product.id);
-                    
                     return (
                         <motion.div
                             key={product.id}
-                            whileHover={{ scale: 1.05, y: -5 }}
+                            whileHover={{ scale: 1.03, y: -8 }}
                             className="recommendation-card glass-container"
                             style={{
-                                ...cardStyle,
-                                padding: layout === "horizontal" ? '1rem' : '1.25rem',
+                                padding: '1.25rem',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '0.75rem',
+                                gap: '1rem',
                                 cursor: 'pointer'
                             }}
-                            onClick={() => onViewProduct && onViewProduct(product)}
+                            onClick={() => onProductClick && onProductClick(product)}
                         >
                             <div style={{ 
                                 width: '100%', 
-                                height: layout === "horizontal" ? '140px' : '160px', 
+                                height: '160px', 
                                 borderRadius: '12px', 
                                 overflow: 'hidden',
                                 background: '#f5eee6',
@@ -86,25 +64,22 @@ export default function RecommendationSection({
                                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                     />
                                 ) : (
-                                    <ImageIcon size={40} style={{ color: '#c27835' }} />
+                                    <ImageIcon size={48} style={{ color: '#c27835' }} />
                                 )}
                             </div>
                             <div>
                                 <h4 style={{ 
-                                    fontSize: layout === "horizontal" ? '0.95rem' : '1.1rem', 
+                                    fontSize: '1.1rem', 
                                     fontWeight: 600, 
                                     color: 'var(--text-primary)',
-                                    margin: 0,
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap'
+                                    margin: 0
                                 }}>
                                     {product.name}
                                 </h4>
                                 <p className="price-amount" style={{ 
-                                    fontSize: layout === "horizontal" ? '1.1rem' : '1.3rem', 
+                                    fontSize: '1.3rem', 
                                     fontWeight: 700,
-                                    margin: '0.25rem 0'
+                                    margin: '0.5rem 0'
                                 }}>
                                     ₹{product.price}
                                 </p>
@@ -112,8 +87,8 @@ export default function RecommendationSection({
                             <button
                                 className="btn-primary"
                                 style={{ 
-                                    fontSize: layout === "horizontal" ? '0.85rem' : '0.9rem', 
-                                    padding: layout === "horizontal" ? '0.6rem 1rem' : '0.7rem 1.2rem',
+                                    fontSize: '0.9rem', 
+                                    padding: '0.7rem 1.2rem',
                                     width: '100%'
                                 }}
                                 onClick={(e) => {
@@ -130,3 +105,5 @@ export default function RecommendationSection({
         </motion.div>
     );
 }
+
+export default RecommendationSection;

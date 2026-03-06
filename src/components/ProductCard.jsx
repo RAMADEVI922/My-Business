@@ -1,16 +1,9 @@
 import { Image as ImageIcon } from 'lucide-react';
 
-export default function ProductCard({ product, cartQuantity, onAddToCart, onViewProduct }) {
+function ProductCard({ product, onAddToCart, cartQuantity }) {
     return (
-        <div 
-            className="product-item glass-container" 
-            style={{ flexDirection: 'column', gap: '1rem', padding: '1.5rem' }}
-        >
-            <div 
-                className="product-img-wrapper" 
-                style={{ width: '100%', height: '200px', cursor: 'pointer' }}
-                onClick={() => onViewProduct && onViewProduct(product)}
-            >
+        <div className="product-item glass-container" style={{ flexDirection: 'column', gap: '1rem', padding: '1.5rem' }}>
+            <div className="product-img-wrapper" style={{ width: '100%', height: '200px' }}>
                 {product.photo ? (
                     <img
                         src={product.photo}
@@ -23,12 +16,8 @@ export default function ProductCard({ product, cartQuantity, onAddToCart, onView
                 )}
             </div>
             <div style={{ width: '100%' }}>
-                <h3 className="product-name" style={{ color: 'var(--text-primary)', fontSize: '1.25rem' }}>
-                    {product.name}
-                </h3>
-                <p className="product-price price-amount" style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>
-                    ₹{product.price}
-                </p>
+                <h3 className="product-name" style={{ color: 'var(--text-primary)', fontSize: '1.25rem' }}>{product.name}</h3>
+                <p className="product-price price-amount" style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>₹{product.price}</p>
                 <button 
                     className="btn-primary btn-add-to-cart w-full" 
                     onClick={() => onAddToCart(product)}
@@ -39,3 +28,5 @@ export default function ProductCard({ product, cartQuantity, onAddToCart, onView
         </div>
     );
 }
+
+export default ProductCard;

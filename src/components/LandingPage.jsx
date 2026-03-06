@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ShoppingCart, User, ShieldCheck } from 'lucide-react';
 
-export default function LandingPage({ onSelectCustomerType, onAdminAccess }) {
+function LandingPage({ onSelectCustomerType, onNavigateToAdmin }) {
     return (
         <motion.div
             key="landing"
@@ -29,9 +29,7 @@ export default function LandingPage({ onSelectCustomerType, onAdminAccess }) {
                         <div className="feature-item"><ShieldCheck size={18} className="feature-icon" /> Shop number/registration</div>
                         <div className="feature-item"><ShieldCheck size={18} className="feature-icon" /> Shop license document</div>
                     </div>
-                    <button onClick={() => onSelectCustomerType('shop-owner')} className="btn-primary">
-                        Register as Shop Owner
-                    </button>
+                    <button onClick={() => onSelectCustomerType('shop-owner')} className="btn-primary">Register as Shop Owner</button>
                 </motion.div>
 
                 <motion.div
@@ -52,18 +50,16 @@ export default function LandingPage({ onSelectCustomerType, onAdminAccess }) {
                         <div className="feature-item"><ShieldCheck size={18} className="feature-icon" /> ID proof & photo required</div>
                         <div className="feature-item"><ShieldCheck size={18} className="feature-icon" /> Quick admin approval</div>
                     </div>
-                    <button onClick={() => onSelectCustomerType('regular')} className="btn-primary">
-                        Register as Customer
-                    </button>
+                    <button onClick={() => onSelectCustomerType('regular')} className="btn-primary">Register as Customer</button>
                 </motion.div>
             </div>
             <motion.button
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.4 }}
+                transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.3 }}
                 whileHover={{ scale: 1.05, background: "rgba(194, 120, 53, 0.1)" }}
                 whileTap={{ scale: 0.95 }}
-                onClick={onAdminAccess}
+                onClick={onNavigateToAdmin}
                 className="admin-access-btn mt-4"
             >
                 Admin Access
@@ -71,3 +67,5 @@ export default function LandingPage({ onSelectCustomerType, onAdminAccess }) {
         </motion.div>
     );
 }
+
+export default LandingPage;

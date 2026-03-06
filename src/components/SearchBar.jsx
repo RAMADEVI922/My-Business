@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export default function SearchBar({ searchQuery, onSearchChange, resultsCount }) {
+function SearchBar({ searchQuery, onSearchChange, resultsCount }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -14,7 +14,10 @@ export default function SearchBar({ searchQuery, onSearchChange, resultsCount })
                 margin: '0 auto 2rem'
             }}
         >
-            <div style={{ position: 'relative', width: '100%' }}>
+            <div style={{
+                position: 'relative',
+                width: '100%'
+            }}>
                 <Search 
                     size={20} 
                     style={{
@@ -93,3 +96,5 @@ export default function SearchBar({ searchQuery, onSearchChange, resultsCount })
         </motion.div>
     );
 }
+
+export default SearchBar;
