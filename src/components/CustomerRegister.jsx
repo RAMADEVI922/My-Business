@@ -9,7 +9,11 @@ import { SignUp } from '@clerk/react';
  * This component is only rendered when clerk_mode is set to 'customer' in sessionStorage
  * Customer credentials are stored in the customer Clerk account, separate from admin credentials
  */
-const CustomerRegister = ({ setView }) => {
+const CustomerRegister = ({ setView, customerType }) => {
+    const title = customerType === 'shop-owner' 
+        ? 'Shop Owner - Create Your Account' 
+        : 'Customer - Create Your Account';
+
     return (
         <motion.div
             key="register"
@@ -18,6 +22,15 @@ const CustomerRegister = ({ setView }) => {
             className="customer-register-wrapper"
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '2rem' }}
         >
+            <h2 style={{ 
+                fontSize: '1.8rem', 
+                fontWeight: 700, 
+                color: '#c27835',
+                marginBottom: '1rem',
+                textAlign: 'center'
+            }}>
+                {title}
+            </h2>
             <SignUp 
                 routing="hash"
                 signInUrl="/customer-login"
