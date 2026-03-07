@@ -76,6 +76,18 @@ function App() {
     // Navigation Persist
     useEffect(() => { sessionStorage.setItem('app_view', view); }, [view]);
 
+    // Force logout check - if flag is set, sign out immediately
+    useEffect(() => {
+        const forceLogout = sessionStorage.getItem('force_admin_logout');
+        if (forceLogout === 'true' && isLoaded) {
+            sessionStorage.removeItem('force_admin_logout');
+            if (isSignedIn) {
+                console.log('Force logout detected - signing out');
+                clerkSignOut();
+            }
+        }
+    }, [isLoaded, isSignedIn, clerkSignOut]);
+
     // Role-based Access & Sync: fires once user data is available from Clerk
     useEffect(() => {
         if (!isLoaded) return;
@@ -213,20 +225,24 @@ function App() {
                                 }
                             }} 
                             onNavigateToAdmin={() => {
-                                // Clear session storage to force fresh login
-                                sessionStorage.setItem('clerk_mode', 'admin');
-                                sessionStorage.setItem('app_view', 'login');
-                                sessionStorage.removeItem('is_admin');
+                                const currentMode = sessionStorage.getItem('clerk_mode');
                                 
-                                // Clear Clerk session by signing out first if signed in
-                                if (isSignedIn) {
-                                    // Sign out and then reload
-                                    clerkSignOut().then(() => {
-                                        console.log('Signed out, reloading for Admin Login');
-                                        window.location.reload();
-                                    });
+                                // Check if already in admin mode and signed in
+                                if (currentMode === 'admin' && isSignedIn) {
+                                    // Already logged in as admin, go directly to dashboard
+                                    console.log('Already logged in as admin, going to dashboard');
+                                    setView('dashboard');
                                 } else {
-                                    // Not signed in, just reload
+                                    // Not logged in or switching from customer mode
+                                    // Set flag to force logout if switching modes
+                                    if (currentMode === 'customer' && isSignedIn) {
+                                        sessionStorage.setItem('force_admin_logout', 'true');
+                                    }
+                                    
+                                    sessionStorage.setItem('clerk_mode', 'admin');
+                                    sessionStorage.setItem('app_view', 'login');
+                                    sessionStorage.removeItem('is_admin');
+                                    
                                     console.log('Navigating to Admin Login - reloading');
                                     window.location.reload();
                                 }

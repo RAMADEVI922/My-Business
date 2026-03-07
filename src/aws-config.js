@@ -73,8 +73,13 @@ export const getProducts = async (adminId) => {
     try {
         const params = { TableName: tableName };
         if (adminId) {
+            // Only return products that belong to this specific admin
             params.FilterExpression = 'adminId = :aid';
             params.ExpressionAttributeValues = { ':aid': adminId };
+        } else {
+            // If no adminId provided, return empty array (don't show any products)
+            console.log("No adminId provided, returning empty product list");
+            return [];
         }
         const command = new ScanCommand(params);
         const response = await docClient.send(command);
