@@ -4,7 +4,13 @@ import { getAdmin, getCustomer, saveCustomer, uploadToS3, getOrdersByEmail, getO
 
 export const useAuth = (setView) => {
     const navigate = useNavigate();
-    const [customerType, setCustomerType] = useState('');
+    const [customerType, setCustomerType] = useState(() => sessionStorage.getItem('customer_type') || '');
+
+    useEffect(() => {
+        if (customerType) {
+            sessionStorage.setItem('customer_type', customerType);
+        }
+    }, [customerType]);
     const [currentUser, setCurrentUser] = useState(() => {
         try { return JSON.parse(sessionStorage.getItem('app_user')) || null; } catch { return null; }
     });
@@ -73,17 +79,21 @@ export const useAuth = (setView) => {
                 }
             }
 
+            // Capture the adminId of the store this customer is registering with
+            const storeAdminId = sessionStorage.getItem('store_admin_id') || null;
+
             const success = await saveCustomer({
                 ...formData,
                 type: activeCustomerType,
                 shopPicture: shopPictureUrl || formData.shopPicture,
-                idProof: idProofUrl || formData.idProof
+                idProof: idProofUrl || formData.idProof,
+                ...(storeAdminId ? { storeAdminId } : {})
             });
 
             if (success) {
-                setCurrentUser({ ...formData, type: activeCustomerType });
+                setCurrentUser({ ...formData, type: activeCustomerType, storeAdminId });
                 if (setMyOrders) {
-                    const o = await getOrdersByEmail(formData.email);
+                    const o = await getOrdersByEmail(formData.email, storeAdminId);
                     setMyOrders(o);
                 }
                 setView('customer-products');
@@ -102,6 +112,8 @@ export const useAuth = (setView) => {
         sessionStorage.removeItem('app_user');
         sessionStorage.removeItem('app_cart');
         sessionStorage.removeItem('is_admin');
+        sessionStorage.removeItem('clerk_mode');
+        sessionStorage.removeItem('customer_type');
         setView('landing');
         navigate('/');
     };

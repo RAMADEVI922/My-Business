@@ -13,6 +13,8 @@ const AdminDashboard = ({
     products,
     orders,
     setOrders,
+    adminId,
+    onLogout,
     getOrders,
     updateOrderStatus,
     proposeNewDeliveryDate
@@ -42,15 +44,13 @@ const AdminDashboard = ({
             const id = `P${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
             let photoUrl = '';
             if (productPhotoFile) {
-                // Must import uploadToS3
                 const { uploadToS3 } = await import('../aws-config.js');
                 photoUrl = await uploadToS3(productPhotoFile, 'product-images');
             }
             const productToAdd = { ...newProduct, id, photo: photoUrl || '' };
             const { saveProduct } = await import('../aws-config.js');
-            const success = await saveProduct(productToAdd);
+            const success = await saveProduct(productToAdd, adminId);
             if (success) {
-                // Not ideal to append here if using useProducts hook, but for now we'll trigger a re-fetch or assume products auto poll
                 alert('Product added successfully. Refresh the page to see changes.');
                 setNewProduct({ name: '', price: '', photo: '' });
                 setProductPhotoFile(null);
@@ -76,11 +76,7 @@ const AdminDashboard = ({
             animate={{ opacity: 1 }}
             className="dashboard-container"
         >
-            <AdminNavbar onLogout={() => {
-                sessionStorage.removeItem('is_admin');
-                setView('login');
-                navigate('/');
-            }} />
+            <AdminNavbar onLogout={onLogout} />
 
             <Routes>
                 <Route path="/admin" element={

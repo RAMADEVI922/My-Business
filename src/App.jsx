@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { ShoppingCart } from 'lucide-react';
+import { useUser, useAuth as useClerkAuth } from '@clerk/react';
 import Navbar from './components/Navbar';
 
 // Hooks
@@ -27,29 +28,85 @@ import AdminDashboard from './components/AdminDashboard';
 
 function App() {
     const location = useLocation();
-    
+    const { isLoaded, isSignedIn, user } = useUser();
+    const { signOut: clerkSignOut } = useClerkAuth();
+
+    // Read the one-time clerk_mode set when the user chose admin or customer on the landing page
+    const clerkMode = sessionStorage.getItem('clerk_mode') || 'customer';
+
     // Core Routing State
-    const [view, setView] = useState(() => sessionStorage.getItem('app_view') || 'welcome');
+    // Initialize view: if coming back as admin (clerk_mode=admin), start on 'login' to avoid
+    // showing a stale customer view before the role effect can fire
+    const [view, setView] = useState(() => {
+        const savedView = sessionStorage.getItem('app_view') || 'welcome';
+        // If we are in admin mode but sessionStorage has an old customer view, reset it
+        const customerOnlyViews = ['customer-products', 'cart', 'order-address', 'my-orders', 'order-confirmed', 'contact'];
+        if (clerkMode === 'admin' && customerOnlyViews.includes(savedView)) {
+            return 'login';
+        }
+        return savedView;
+    });
     const [forgotFrom, setForgotFrom] = useState('login'); // 'login' (admin) or 'customer-login'
     
     // Navigation Persist
     useEffect(() => { sessionStorage.setItem('app_view', view); }, [view]);
 
-    // Admin Route Sync: Ensure view is 'dashboard' if URL starts with /admin
+    // Role-based Access & Sync: fires once user data is available from Clerk
     useEffect(() => {
-        if (location.pathname.startsWith('/admin')) {
+        if (!isLoaded) return;
+        if (!isSignedIn || !user) return;
+        
+        const role = user.publicMetadata?.role;
+        const isAdminMode = clerkMode === 'admin' || role === 'admin';
+        
+        if (isAdminMode) {
             setView('dashboard');
+            sessionStorage.setItem('is_admin', 'true');
+        } else {
+            setView('customer-products');
+            sessionStorage.removeItem('is_admin');
         }
-    }, [location.pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoaded, isSignedIn, user]);
 
     // Custom Hooks Integration
     const { 
-        currentUser, customerType, setCustomerType, error, setError,
+        currentUser, setCurrentUser, customerType, setCustomerType, error, setError,
         handleAdminLogin: loginAdmin, 
         handleCustomerLogin: loginCustomer, 
         handleCustomerRegister: registerCustomer, 
         logout 
     } = useAuth(setView);
+
+    // Synchronize Clerk user with app's currentUser
+    useEffect(() => {
+        if (isSignedIn && user) {
+            const userData = {
+                email: user.primaryEmailAddress?.emailAddress,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                type: user.publicMetadata?.role || 'customer'
+            };
+            
+            // Only update if data actually changed to prevent render loops
+            setCurrentUser(prev => {
+                const isSame = prev && 
+                    prev.email === userData.email && 
+                    prev.firstName === userData.firstName && 
+                    prev.lastName === userData.lastName &&
+                    prev.type === userData.type;
+                return isSame ? prev : userData;
+            });
+        } else if (isLoaded && !isSignedIn) {
+            setCurrentUser(null);
+        }
+    }, [isSignedIn, user, isLoaded, setCurrentUser]);
+
+    // Extract adminId — the unique Clerk userId of this admin (used for data scoping)
+    // Only set when in admin mode. For customers, adminId from the store they registered with is used.
+    const adminId = (clerkMode === 'admin' && isSignedIn && user) ? user.id : null;
+    // For customer store scoping: the admin store they registered/shop with
+    const customerAdminId = clerkMode !== 'admin' ? sessionStorage.getItem('store_admin_id') : null;
 
     const { 
         cart, setCart, addToCart, removeFromCart, updateQty, cartTotal, cartCount 
@@ -58,13 +115,13 @@ function App() {
     const { 
         products, searchQuery, setSearchQuery, filteredProducts, 
         recentlyViewed, addToRecentlyViewed, recommendedProducts 
-    } = useProducts(view, location.pathname, cart);
+    } = useProducts(view, location.pathname, cart, adminId || customerAdminId);
 
     const { 
         orders, setOrders, myOrders, setMyOrders, lastOrderId, 
         orderDetails, setOrderDetails, orderError, setOrderError, 
         handleConfirmOrder, handleCancelOrder 
-    } = useOrders(currentUser, cart, cartTotal, setView);
+    } = useOrders(currentUser, cart, cartTotal, setView, adminId || customerAdminId);
 
     // Handlers with setters injected
     const wrappedAdminLogin = (e, formData) => loginAdmin(e, formData, setOrders);
@@ -79,7 +136,10 @@ function App() {
                     currentUser={currentUser} 
                     cartCount={cartCount} 
                     onNavigate={setView} 
-                    onLogout={() => logout(setCart)} 
+                    onLogout={() => {
+                        clerkSignOut();
+                        logout(setCart);
+                    }} 
                 />
             )}
 
@@ -89,10 +149,16 @@ function App() {
                     {view === 'landing' && (
                         <LandingPage 
                             onSelectCustomerType={(type) => {
-                                setCustomerType(type);
-                                setView('register');
+                                sessionStorage.setItem('clerk_mode', 'customer');
+                                sessionStorage.setItem('app_view', 'register');
+                                sessionStorage.setItem('customer_type', type);
+                                window.location.reload();
                             }} 
-                            onNavigateToAdmin={() => setView('login')} 
+                            onNavigateToAdmin={() => {
+                                sessionStorage.setItem('clerk_mode', 'admin');
+                                sessionStorage.setItem('app_view', 'login');
+                                window.location.reload();
+                            }} 
                         />
                     )}
                     {view === 'register' && (
@@ -156,7 +222,7 @@ function App() {
                             setView={setView}
                             getOrdersByEmail={async (email) => {
                                 const { getOrdersByEmail } = await import('./aws-config');
-                                return await getOrdersByEmail(email);
+                                return await getOrdersByEmail(email, customerAdminId);
                             }}
                             acceptProposedDate={async (id) => {
                                 const { acceptProposedDate } = await import('./aws-config');
@@ -197,9 +263,14 @@ function App() {
                             products={products}
                             orders={orders}
                             setOrders={setOrders}
+                            adminId={adminId}
+                            onLogout={() => {
+                                clerkSignOut();
+                                logout(setCart);
+                            }}
                             getOrders={async () => {
                                 const { getOrders } = await import('./aws-config');
-                                return await getOrders();
+                                return await getOrders(adminId);
                             }}
                             updateOrderStatus={async (id, status) => {
                                 const { updateOrderStatus } = await import('./aws-config');

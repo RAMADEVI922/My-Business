@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getProducts } from '../aws-config';
 
-export const useProducts = (view, locationPathname, cart) => {
+export const useProducts = (view, locationPathname, cart, adminId) => {
     const [products, setProducts] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -32,15 +32,15 @@ export const useProducts = (view, locationPathname, cart) => {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            console.log("Fetching products...");
-            const data = await getProducts();
+            console.log("Fetching products for adminId:", adminId);
+            const data = await getProducts(adminId);
             const sanitizedData = data.map(p => ({ ...p, photo: sanitizePhotoUrl(p.photo) }));
             setProducts(sanitizedData);
         };
         if (view === 'dashboard' || view === 'customer-products' || locationPathname?.startsWith('/admin')) {
             fetchProducts();
         }
-    }, [view, locationPathname]);
+    }, [view, locationPathname, adminId]);
 
     const addToRecentlyViewed = (product) => {
         setRecentlyViewed(prev => {

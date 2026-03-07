@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { saveOrder, updateOrderStatus, getOrdersByEmail, sendOrderNotification } from '../aws-config';
 
-export const useOrders = (currentUser, cart, cartTotal, setView) => {
+export const useOrders = (currentUser, cart, cartTotal, setView, adminId) => {
     const [orders, setOrders] = useState([]);
     const [myOrders, setMyOrders] = useState([]);
     const [lastOrderId, setLastOrderId] = useState(null);
@@ -30,7 +30,7 @@ export const useOrders = (currentUser, cart, cartTotal, setView) => {
             phone: `${orderDetails.countryCode}${orderDetails.phone}`,
             deliveryDate: orderDetails.deliveryDate,
             paymentMethod: orderDetails.paymentMethod,
-        });
+        }, adminId);
         
         setLastOrderId(orderId);
         setView('order-confirmed');

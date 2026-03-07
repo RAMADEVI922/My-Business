@@ -1,7 +1,11 @@
-import { ShoppingCart, LogOut } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
+import { UserButton, useUser } from '@clerk/react';
 
-export default function Navbar({ currentUser, cartCount, onNavigate, onLogout }) {
-    if (!currentUser) {
+export default function Navbar({ currentUser, cartCount, onNavigate }) {
+    const { isSignedIn, user } = useUser();
+    const isAdmin = user?.publicMetadata?.role === 'admin';
+
+    if (!isSignedIn) {
         return (
             <nav className="main-nav">
                 <div className="nav-logo pointer" onClick={() => onNavigate('landing')}>
@@ -22,34 +26,38 @@ export default function Navbar({ currentUser, cartCount, onNavigate, onLogout })
 
     return (
         <nav className="main-nav">
-            <div className="nav-logo pointer" onClick={() => onNavigate('customer-products')}>
+            <div className="nav-logo pointer" onClick={() => onNavigate(isAdmin ? 'dashboard' : 'customer-products')}>
                 <ShoppingCart className="text-accent" size={24} />
                 <span>MyBusiness</span>
             </div>
             <div className="nav-links">
-                <button onClick={() => onNavigate('customer-products')} className="nav-link bg-none border-none pointer">
-                    Home
-                </button>
-                <button onClick={() => onNavigate('my-orders')} className="nav-link bg-none border-none pointer">
-                    My Orders
-                </button>
+                {!isAdmin && (
+                    <>
+                        <button onClick={() => onNavigate('customer-products')} className="nav-link bg-none border-none pointer">
+                            Home
+                        </button>
+                        <button onClick={() => onNavigate('my-orders')} className="nav-link bg-none border-none pointer">
+                            My Orders
+                        </button>
+                    </>
+                )}
                 <button onClick={() => onNavigate('contact')} className="nav-link bg-none border-none pointer">
                     Contact Us
                 </button>
-                <button 
-                    onClick={() => onNavigate('cart')} 
-                    className={`nav-cart-btn flex-center pointer bg-none border-none ${cartCount > 0 ? 'has-items' : ''}`}
-                >
-                    <ShoppingCart size={20} />
-                    <span className="text-xs">Cart</span>
-                    {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-                </button>
-                <button 
-                    onClick={onLogout} 
-                    className="nav-link logout-nav-btn pointer"
-                >
-                    Logout
-                </button>
+                {!isAdmin && (
+                    <button 
+                        onClick={() => onNavigate('cart')} 
+                        className={`nav-cart-btn flex-center pointer bg-none border-none ${cartCount > 0 ? 'has-items' : ''}`}
+                    >
+                        <ShoppingCart size={20} />
+                        <span className="text-xs">Cart</span>
+                        {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                    </button>
+                )}
+                
+                <div className="user-control-wrapper" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}>
+                    <UserButton afterSignOutUrl="/" />
+                </div>
             </div>
         </nav>
     );

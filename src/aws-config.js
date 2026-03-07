@@ -69,13 +69,16 @@ export const uploadToS3 = async (file, path) => {
     }
 };
 
-export const getProducts = async () => {
+export const getProducts = async (adminId) => {
     try {
-        const command = new ScanCommand({
-            TableName: tableName,
-        });
+        const params = { TableName: tableName };
+        if (adminId) {
+            params.FilterExpression = 'adminId = :aid';
+            params.ExpressionAttributeValues = { ':aid': adminId };
+        }
+        const command = new ScanCommand(params);
         const response = await docClient.send(command);
-        console.log("DynamoDB Scan Success:", response.Items?.length || 0, "items found");
+        console.log("DynamoDB Scan Success:", response.Items?.length || 0, "items found for admin:", adminId);
         return response.Items || [];
     } catch (error) {
         console.error("Error fetching products from DynamoDB:", error.name || "Error", error.message || error);
@@ -83,11 +86,11 @@ export const getProducts = async () => {
     }
 };
 
-export const saveProduct = async (product) => {
+export const saveProduct = async (product, adminId) => {
     try {
         const command = new PutCommand({
             TableName: tableName,
-            Item: product,
+            Item: { ...product, adminId: adminId || 'unscoped' },
         });
         await docClient.send(command);
         return true;
@@ -305,12 +308,13 @@ export const getCustomer = async (email) => {
 
 const ordersTableName = 'js_Orders';
 
-export const saveOrder = async (order) => {
+export const saveOrder = async (order, adminId) => {
     try {
         const orderId = `ORD-${Date.now()}`;
         const item = {
             orderId,
             ...order,
+            adminId: adminId || 'unscoped',
             status: 'pending',
             createdAt: new Date().toISOString(),
         };
@@ -322,9 +326,14 @@ export const saveOrder = async (order) => {
     }
 };
 
-export const getOrders = async () => {
+export const getOrders = async (adminId) => {
     try {
-        const response = await docClient.send(new ScanCommand({ TableName: ordersTableName }));
+        const params = { TableName: ordersTableName };
+        if (adminId) {
+            params.FilterExpression = 'adminId = :aid';
+            params.ExpressionAttributeValues = { ':aid': adminId };
+        }
+        const response = await docClient.send(new ScanCommand(params));
         return (response.Items || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } catch (error) {
         console.error('Error fetching orders:', error);
@@ -332,14 +341,19 @@ export const getOrders = async () => {
     }
 };
 
-export const getOrdersByEmail = async (email) => {
+export const getOrdersByEmail = async (email, adminId) => {
     try {
-        const { FilterExpression, ExpressionAttributeValues, ...rest } = {
+        let filterExpression = 'customerEmail = :email';
+        const expressionValues = { ':email': email };
+        if (adminId) {
+            filterExpression += ' AND adminId = :aid';
+            expressionValues[':aid'] = adminId;
+        }
+        const response = await docClient.send(new ScanCommand({
             TableName: ordersTableName,
-            FilterExpression: 'customerEmail = :email',
-            ExpressionAttributeValues: { ':email': email },
-        };
-        const response = await docClient.send(new ScanCommand({ TableName: ordersTableName, FilterExpression, ExpressionAttributeValues }));
+            FilterExpression: filterExpression,
+            ExpressionAttributeValues: expressionValues,
+        }));
         return (response.Items || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } catch (error) {
         console.error('Error fetching customer orders:', error);
