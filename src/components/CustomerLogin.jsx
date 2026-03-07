@@ -2,6 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SignIn } from '@clerk/react';
 
+/**
+ * Customer Login Component
+ * 
+ * Uses Clerk SignIn component with the CUSTOMER Clerk instance (mybusiness - lenient-crayfish-17)
+ * This component is only rendered when clerk_mode is set to 'customer' in sessionStorage
+ * Customer credentials are stored in the customer Clerk account, separate from admin credentials
+ */
 const CustomerLogin = ({ setView }) => {
     return (
         <motion.div

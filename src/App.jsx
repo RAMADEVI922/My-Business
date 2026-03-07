@@ -5,6 +5,30 @@ import { ShoppingCart } from 'lucide-react';
 import { useUser, useAuth as useClerkAuth } from '@clerk/react';
 import Navbar from './components/Navbar';
 
+/**
+ * DUAL AUTHENTICATION SYSTEM
+ * 
+ * This application uses TWO separate Clerk accounts for authentication:
+ * 
+ * 1. ADMIN AUTHENTICATION (my_business_admin)
+ *    - Clerk Instance: verified-impala-96
+ *    - Key: VITE_CLERK_ADMIN_PUBLISHABLE_KEY
+ *    - Used for: Admin users who manage products, orders, and settings
+ *    - Flow: Landing Page → Admin Access → Admin Login (Clerk SignIn) → Dashboard
+ * 
+ * 2. CUSTOMER AUTHENTICATION (mybusiness)
+ *    - Clerk Instance: lenient-crayfish-17
+ *    - Key: VITE_CLERK_CUSTOMER_PUBLISHABLE_KEY
+ *    - Used for: Regular customers and shop owners who purchase products
+ *    - Flow: Landing Page → Select Customer Type → Register (Clerk SignUp) → Store Selector → Products
+ * 
+ * MODE SWITCHING:
+ * - The 'clerk_mode' in sessionStorage determines which Clerk instance is loaded
+ * - When switching modes, the page reloads to initialize the correct Clerk instance
+ * - This ensures admin credentials are stored in the admin Clerk account
+ * - And customer credentials are stored in the customer Clerk account
+ */
+
 // Hooks
 import { useProducts } from './hooks/useProducts';
 import { useCart } from './hooks/useCart';
@@ -25,6 +49,7 @@ import ContactUs from './components/ContactUs';
 import AdminLogin from './components/AdminLogin';
 import ForgotPassword from './components/ForgotPassword';
 import AdminDashboard from './components/AdminDashboard';
+import StoreSelector from './components/StoreSelector';
 
 function App() {
     const location = useLocation();
@@ -54,16 +79,41 @@ function App() {
     // Role-based Access & Sync: fires once user data is available from Clerk
     useEffect(() => {
         if (!isLoaded) return;
+        
+        // Don't auto-redirect if user is on welcome or landing pages
+        const noRedirectPages = ['welcome', 'landing'];
+        if (noRedirectPages.includes(view)) return;
+        
+        // For login page, only redirect if user is signed in (after successful login)
+        if (view === 'login' && !isSignedIn) return;
+        
+        // For register and customer-login pages, only redirect if user is signed in
+        if ((view === 'register' || view === 'customer-login') && !isSignedIn) return;
+        
         if (!isSignedIn || !user) return;
         
         const role = user.publicMetadata?.role;
         const isAdminMode = clerkMode === 'admin' || role === 'admin';
         
         if (isAdminMode) {
-            setView('dashboard');
+            // Only redirect if not already on dashboard
+            if (view !== 'dashboard') {
+                console.log('Admin authenticated, redirecting to dashboard');
+                setView('dashboard');
+            }
             sessionStorage.setItem('is_admin', 'true');
         } else {
-            setView('customer-products');
+            // Customer should see store selector after login/registration
+            const hasSelectedStore = sessionStorage.getItem('store_admin_id');
+            if (hasSelectedStore) {
+                if (view !== 'customer-products') {
+                    setView('customer-products');
+                }
+            } else {
+                if (view !== 'store-selector') {
+                    setView('store-selector');
+                }
+            }
             sessionStorage.removeItem('is_admin');
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,15 +199,37 @@ function App() {
                     {view === 'landing' && (
                         <LandingPage 
                             onSelectCustomerType={(type) => {
+                                const currentMode = sessionStorage.getItem('clerk_mode');
                                 sessionStorage.setItem('clerk_mode', 'customer');
-                                sessionStorage.setItem('app_view', 'register');
                                 sessionStorage.setItem('customer_type', type);
-                                window.location.reload();
+                                
+                                // Only reload if switching from admin to customer mode, or if no mode was set
+                                if (currentMode === 'admin' || !currentMode) {
+                                    sessionStorage.setItem('app_view', 'register');
+                                    console.log('Switching to Customer mode - reloading to load customer Clerk instance');
+                                    window.location.reload();
+                                } else {
+                                    setView('register');
+                                }
                             }} 
                             onNavigateToAdmin={() => {
+                                // Clear session storage to force fresh login
                                 sessionStorage.setItem('clerk_mode', 'admin');
                                 sessionStorage.setItem('app_view', 'login');
-                                window.location.reload();
+                                sessionStorage.removeItem('is_admin');
+                                
+                                // Clear Clerk session by signing out first if signed in
+                                if (isSignedIn) {
+                                    // Sign out and then reload
+                                    clerkSignOut().then(() => {
+                                        console.log('Signed out, reloading for Admin Login');
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    // Not signed in, just reload
+                                    console.log('Navigating to Admin Login - reloading');
+                                    window.location.reload();
+                                }
                             }} 
                         />
                     )}

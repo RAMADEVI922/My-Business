@@ -2,6 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SignUp } from '@clerk/react';
 
+/**
+ * Customer Registration Component
+ * 
+ * Uses Clerk SignUp component with the CUSTOMER Clerk instance (mybusiness - lenient-crayfish-17)
+ * This component is only rendered when clerk_mode is set to 'customer' in sessionStorage
+ * Customer credentials are stored in the customer Clerk account, separate from admin credentials
+ */
 const CustomerRegister = ({ setView }) => {
     return (
         <motion.div

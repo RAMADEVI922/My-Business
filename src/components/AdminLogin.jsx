@@ -2,6 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SignIn } from '@clerk/react';
 
+/**
+ * Admin Login Component
+ * 
+ * Uses Clerk SignIn component with the ADMIN Clerk instance (my_business_admin - verified-impala-96)
+ * This component is only rendered when clerk_mode is set to 'admin' in sessionStorage
+ * Admin credentials are stored in the admin Clerk account, separate from customer credentials
+ */
 const AdminLogin = ({ setView }) => {
     return (
         <motion.div
