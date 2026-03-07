@@ -148,6 +148,158 @@ export const getAdmin = async (username) => {
     }
 };
 
+export const getAdminProfiles = async () => {
+    try {
+        // Get ALL admins first to see what we have
+        const allAdminsCommand = new ScanCommand({
+            TableName: adminTableName
+        });
+        const allResult = await docClient.send(allAdminsCommand);
+        console.log('📊 All admins in database:', allResult.Items?.map(a => ({
+            username: a.username,
+            email: a.email || a.Email,
+            hasClerkId: !!a.clerkUserId,
+            clerkUserId: a.clerkUserId || 'none'
+        })));
+        
+        // Now filter for admins with clerkUserId
+        const command = new ScanCommand({
+            TableName: adminTableName,
+            FilterExpression: 'attribute_exists(clerkUserId) AND clerkUserId <> :empty',
+            ExpressionAttributeValues: {
+                ':empty': ''
+            }
+        });
+        const result = await docClient.send(command);
+        console.log('✅ Admin profiles with Clerk accounts:', result.Items);
+        
+        if (!result.Items || result.Items.length === 0) {
+            console.warn('⚠️ No admins with Clerk integration found. Admins need to log in through Admin Portal first.');
+            console.log('💡 Current Clerk admins should log in at least once to link their accounts.');
+            return [];
+        }
+        
+        // Remove duplicates based on clerkUserId
+        const uniqueAdmins = [];
+        const seenIds = new Set();
+        
+        for (const admin of result.Items) {
+            if (admin.clerkUserId && !seenIds.has(admin.clerkUserId)) {
+                seenIds.add(admin.clerkUserId);
+                uniqueAdmins.push({
+                    clerkUserId: admin.clerkUserId,
+                    username: admin.username,
+                    email: admin.email || admin.Email,
+                    storeName: admin.storeName || admin.username || admin.email || admin.Email
+                });
+            }
+        }
+        
+        console.log('🎯 Unique admin profiles to display:', uniqueAdmins);
+        return uniqueAdmins;
+    } catch (error) {
+        console.error('❌ Error fetching admin profiles:', error);
+        return [];
+    }
+};
+
+export const updateAdminProfile = async (email, clerkUserId, storeName) => {
+    try {
+        console.log('Attempting to update admin profile for email:', email);
+        
+        // First, try to find the admin by email
+        let scanCommand = new ScanCommand({
+            TableName: adminTableName,
+            FilterExpression: 'email = :email OR Email = :email',
+            ExpressionAttributeValues: {
+                ':email': email
+            }
+        });
+        
+        let result = await docClient.send(scanCommand);
+        let admin = result.Items?.[0];
+        
+        // If not found by email, try to get all admins and find by partial email match
+        if (!admin) {
+            console.log('🔍 Admin not found by exact email, trying scan all...');
+            scanCommand = new ScanCommand({
+                TableName: adminTableName
+            });
+            result = await docClient.send(scanCommand);
+            
+            console.log('🗂️ Scanning all admins for match...');
+            
+            // Try multiple matching strategies
+            const emailUsername = email.toLowerCase().split('@')[0];
+            
+            admin = result.Items?.find(a => {
+                const adminEmail = (a.email || a.Email || '').toLowerCase();
+                const adminUsername = (a.username || '').toLowerCase();
+                
+                // Strategy 1: Exact email match (case insensitive)
+                if (adminEmail === email.toLowerCase()) {
+                    console.log('✅ Found by exact email match:', a.username);
+                    return true;
+                }
+                
+                // Strategy 2: Email username contains the Clerk email username
+                if (adminEmail && adminEmail.includes(emailUsername)) {
+                    console.log('✅ Found by email username match:', a.username);
+                    return true;
+                }
+                
+                // Strategy 3: Username matches email username
+                if (adminUsername && adminUsername.includes(emailUsername)) {
+                    console.log('✅ Found by username match:', a.username);
+                    return true;
+                }
+                
+                return false;
+            });
+        }
+        
+        if (!admin) {
+            console.error('❌ Admin not found with email:', email);
+            console.log('📋 Available admins in database:', result.Items?.map(a => ({ 
+                username: a.username, 
+                email: a.email || a.Email,
+                hasClerkId: !!a.clerkUserId,
+                clerkUserId: a.clerkUserId || 'none'
+            })));
+            console.log('💡 TIP: The Clerk email must match the email in DynamoDB Admins table');
+            return false;
+        }
+        
+        console.log('✅ Found admin:', {
+            username: admin.username,
+            email: admin.email || admin.Email,
+            willUpdateWith: {
+                clerkUserId: clerkUserId,
+                storeName: storeName || admin.username
+            }
+        });
+        
+        // Update the admin with Clerk user ID and store name
+        const updateCommand = new UpdateCommand({
+            TableName: adminTableName,
+            Key: { username: admin.username },
+            UpdateExpression: 'SET clerkUserId = :cid, storeName = :sn, updatedAt = :ua',
+            ExpressionAttributeValues: {
+                ':cid': clerkUserId,
+                ':sn': storeName || admin.username,
+                ':ua': new Date().toISOString()
+            }
+        });
+        
+        await docClient.send(updateCommand);
+        console.log('✅ Admin profile updated successfully with Clerk ID:', clerkUserId);
+        return true;
+    } catch (error) {
+        console.error('Error updating admin profile:', error);
+        return false;
+    }
+};
+
 export const updateAdminPassword = async (username, newPassword) => {
     try {
         await docClient.send(new UpdateCommand({

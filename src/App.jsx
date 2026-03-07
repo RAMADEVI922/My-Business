@@ -80,10 +80,20 @@ function App() {
                     prev.type === userData.type;
                 return isSame ? prev : userData;
             });
+            
+            // If admin, update their profile with Clerk user ID
+            if (adminId && userData.email) {
+                const updateAdminWithClerkId = async () => {
+                    const { updateAdminProfile } = await import('./aws-config');
+                    const storeName = `${user.firstName} ${user.lastName}`.trim() || user.username;
+                    await updateAdminProfile(userData.email, user.id, storeName);
+                };
+                updateAdminWithClerkId();
+            }
         } else if (!isSignedIn) {
             setCurrentUser(null);
         }
-    }, [isSignedIn, user, setCurrentUser]);
+    }, [isSignedIn, user, setCurrentUser, adminId]);
 
     // Cart management
     const { 
