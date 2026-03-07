@@ -363,7 +363,7 @@ const AdminDashboard = ({
                                 {orders
                                     .filter(order => !selectedDate || order.createdAt.startsWith(selectedDate))
                                     .map(order => (
-                                        <div key={order.orderId} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '14px 16px', border: `1px solid ${order.status === 'pending' ? 'rgba(194,120,53,0.4)' : order.status === 'accepted' ? 'rgba(34,197,94,0.3)' : order.status === 'Cancelled by Customer' ? 'rgba(107, 114, 128, 0.4)' : 'rgba(239,68,68,0.3)'}` }}>
+                                        <div key={order.orderId} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '14px 16px', border: `1px solid ${order.status === 'pending' ? 'rgba(194,120,53,0.4)' : order.status === 'accepted' ? 'rgba(34,197,94,0.3)' : order.status === 'Out for Delivery' ? 'rgba(59,130,246,0.3)' : order.status === 'Delivered' ? 'rgba(16,185,129,0.3)' : order.status === 'Cancelled by Customer' ? 'rgba(107, 114, 128, 0.4)' : 'rgba(239,68,68,0.3)'}` }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
                                                 <div>
                                                     <p className="order-id-highlight" style={{ fontSize: '0.9rem', marginBottom: '8px' }}>{order.orderId}</p>
@@ -373,9 +373,45 @@ const AdminDashboard = ({
                                                     <p className="price-amount" style={{ margin: '4px 0 0', fontSize: '1.1rem' }}>Total: ₹{order.total}</p>
                                                 </div>
                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                                                    <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700, background: order.status === 'pending' ? 'rgba(194,120,53,0.2)' : order.status === 'accepted' ? 'rgba(34,197,94,0.2)' : order.status === 'Cancelled by Customer' ? 'rgba(107, 114, 128, 0.2)' : 'rgba(239,68,68,0.2)', color: order.status === 'pending' ? '#c27835' : order.status === 'accepted' ? '#16a34a' : order.status === 'Cancelled by Customer' ? '#6b7280' : '#dc2626' }}>
+                                                    <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700, background: order.status === 'pending' ? 'rgba(194,120,53,0.2)' : order.status === 'accepted' ? 'rgba(34,197,94,0.2)' : order.status === 'Out for Delivery' ? 'rgba(59,130,246,0.2)' : order.status === 'Delivered' ? 'rgba(16,185,129,0.2)' : order.status === 'Cancelled by Customer' ? 'rgba(107, 114, 128, 0.2)' : 'rgba(239,68,68,0.2)', color: order.status === 'pending' ? '#c27835' : order.status === 'accepted' ? '#16a34a' : order.status === 'Out for Delivery' ? '#3b82f6' : order.status === 'Delivered' ? '#10b981' : order.status === 'Cancelled by Customer' ? '#6b7280' : '#dc2626' }}>
                                                         {order.status.toUpperCase()}
                                                     </span>
+                                                    
+                                                    {/* Delivery Signature Display */}
+                                                    {order.status === 'Delivered' && order.deliverySignature && (
+                                                        <div style={{ 
+                                                            marginTop: '8px', 
+                                                            padding: '8px', 
+                                                            background: 'rgba(16, 185, 129, 0.1)', 
+                                                            borderRadius: '8px',
+                                                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                                                            maxWidth: '200px'
+                                                        }}>
+                                                            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', margin: '0 0 6px' }}>
+                                                                ✓ Signed
+                                                            </p>
+                                                            <div style={{ 
+                                                                background: 'white', 
+                                                                borderRadius: '6px', 
+                                                                padding: '4px',
+                                                                border: '1px solid #10b981'
+                                                            }}>
+                                                                <img 
+                                                                    src={order.deliverySignature} 
+                                                                    alt="Signature" 
+                                                                    style={{ 
+                                                                        width: '100%', 
+                                                                        height: 'auto',
+                                                                        display: 'block'
+                                                                    }} 
+                                                                />
+                                                            </div>
+                                                            <p style={{ fontSize: '0.7rem', color: '#888', margin: '4px 0 0', textAlign: 'center' }}>
+                                                                {new Date(order.deliverySignedAt).toLocaleDateString()}
+                                                            </p>
+                                                        </div>
+                                                    )}
+
                                                     {order.status === 'pending' && (
                                                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                             <button onClick={async () => {
@@ -417,6 +453,24 @@ const AdminDashboard = ({
                                                                 }
                                                             }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>✗ Cancel</button>
                                                         </div>
+                                                    )}
+                                                    
+                                                    {order.status === 'accepted' && (
+                                                        <button onClick={async () => {
+                                                            try {
+                                                                const success = await updateOrderStatus(order.orderId, 'Out for Delivery');
+                                                                if (success) {
+                                                                    const o = await getOrders(); 
+                                                                    setOrders(o);
+                                                                    alert('Order marked as Out for Delivery!');
+                                                                } else {
+                                                                    alert('Failed to update order status.');
+                                                                }
+                                                            } catch (error) {
+                                                                console.error('Error updating order:', error);
+                                                                alert('Error: ' + error.message);
+                                                            }
+                                                        }} style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>🚚 Out for Delivery</button>
                                                     )}
                                                 </div>
                                             </div>

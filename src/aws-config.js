@@ -548,6 +548,69 @@ export const updateOrderStatus = async (orderId, status, additionalFields = {}) 
     }
 };
 
+// Upload signature image to S3
+export const uploadSignatureToS3 = async (signatureDataUrl, orderId) => {
+    try {
+        if (!bucketName) {
+            console.error("S3 Bucket Name is not configured");
+            return null;
+        }
+
+        // Convert base64 to Uint8Array for browser compatibility
+        const base64Data = signatureDataUrl.replace(/^data:image\/\w+;base64,/, '');
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        
+        const fileName = `signatures/${orderId}_${Date.now()}.png`;
+
+        const command = new PutObjectCommand({
+            Bucket: bucketName,
+            Key: fileName,
+            Body: bytes,
+            ContentType: 'image/png'
+        });
+
+        await s3Client.send(command);
+        const signatureUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${fileName}`;
+        console.log('Signature uploaded to S3:', signatureUrl);
+        return signatureUrl;
+    } catch (error) {
+        console.error("Error uploading signature to S3:", error);
+        return null;
+    }
+};
+
+// Save delivery signature and update order status to Delivered
+export const saveDeliverySignature = async (orderId, signatureDataUrl) => {
+    try {
+        // Upload signature to S3
+        const signatureUrl = await uploadSignatureToS3(signatureDataUrl, orderId);
+        
+        if (!signatureUrl) {
+            throw new Error('Failed to upload signature');
+        }
+
+        // Update order with signature and status
+        const success = await updateOrderStatus(orderId, 'Delivered', {
+            deliverySignature: signatureUrl,
+            deliverySignedAt: new Date().toISOString()
+        });
+
+        if (success) {
+            console.log('Delivery signature saved successfully for order:', orderId);
+            return { success: true, signatureUrl };
+        } else {
+            throw new Error('Failed to update order status');
+        }
+    } catch (error) {
+        console.error('Error saving delivery signature:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 const SENDER_EMAIL = import.meta.env.VITE_SES_SENDER_EMAIL || '';
 
 // Propose a new delivery date for an order
