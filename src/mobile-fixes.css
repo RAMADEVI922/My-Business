@@ -861,3 +861,341 @@ html, body {
     max-width: 150px !important;
   }
 }
+
+/* ========================================
+   MOBILE STORE SELECTOR FIXES
+   ======================================== */
+@media (max-width: 767px) {
+  /* Store Selector Container */
+  .store-selector-wrapper,
+  div[style*="maxWidth: '900px'"] {
+    max-width: 100% !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+
+  /* Store Selector Title */
+  h1[style*="fontSize: '2.5rem'"] {
+    font-size: 1.8rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Store Selector Subtitle */
+  p[style*="fontSize: '1.1rem'"] {
+    font-size: 0.9rem !important;
+  }
+
+  /* Search Bar in Store Selector */
+  div[style*="position: relative"] input[type="text"] {
+    padding: 0.65rem 1rem 0.65rem 2.5rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* Search Results */
+  div[style*="flexDirection: 'column'"] > div[style*="padding: '1rem'"] {
+    padding: 0.85rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Store Information Card */
+  div[style*="padding: '2rem'"][style*="background: linear-gradient"] {
+    padding: 1.25rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  /* Product Preview Grid */
+  div[style*="gridTemplateColumns: repeat(auto-fit, minmax(180px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Shop Now Button */
+  button[style*="padding: '0.75rem 1.25rem'"] {
+    padding: 0.85rem 1rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Home Button */
+  button[style*="position: absolute"][style*="top: '2rem'"] {
+    position: fixed !important;
+    top: 1rem !important;
+    left: 1rem !important;
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.8rem !important;
+    z-index: 1000 !important;
+  }
+}
+
+/* ========================================
+   MOBILE CUSTOMER REGISTER FIXES
+   ======================================== */
+@media (max-width: 767px) {
+  /* Register Container */
+  .customer-register-wrapper,
+  div[style*="maxWidth: '600px'"] {
+    max-width: 100% !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+
+  /* Register Title */
+  h2[style*="fontSize: '1.8rem'"] {
+    font-size: 1.4rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Shop Owner Documents Section */
+  div[style*="background: rgba(255, 255, 255, 0.05)"] {
+    padding: 1rem !important;
+    margin-top: 0.75rem !important;
+  }
+
+  /* Document Section Title */
+  h3[style*="fontSize: '1.2rem'"] {
+    font-size: 1rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Labels */
+  label[style*="fontSize: '1.1rem'"] {
+    font-size: 0.95rem !important;
+  }
+
+  /* File Input */
+  input[type="file"] {
+    padding: 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Select Dropdown */
+  select[style*="padding: '0.75rem'"] {
+    padding: 0.65rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Image Preview Container */
+  div[style*="padding: '1rem'"][style*="background: rgba(194, 120, 53, 0.1)"] {
+    padding: 0.75rem !important;
+  }
+
+  /* Preview Image */
+  img[style*="maxHeight: '250px'"] {
+    max-height: 200px !important;
+  }
+
+  /* Upload Documents Button */
+  button[style*="padding: '0.875rem'"] {
+    padding: 0.75rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Error Message */
+  div[style*="padding: '0.75rem'"][style*="background: '#fee'"] {
+    padding: 0.65rem !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* ========================================
+   MOBILE CLERK COMPONENTS FIXES
+   ======================================== */
+@media (max-width: 767px) {
+  /* Clerk SignUp/SignIn Forms */
+  .cl-rootBox {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .cl-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+
+  .cl-formButtonPrimary {
+    width: 100% !important;
+    min-height: 44px !important;
+  }
+
+  .cl-formFieldInput {
+    min-height: 44px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .cl-headerTitle {
+    font-size: 1.3rem !important;
+  }
+
+  .cl-headerSubtitle {
+    font-size: 0.85rem !important;
+  }
+}
+
+/* ========================================
+   MOBILE CALENDAR FIXES
+   ======================================== */
+@media (max-width: 767px) {
+  .delivery-calendar {
+    max-width: 100% !important;
+    padding: 0.75rem !important;
+    margin: 0 !important;
+  }
+
+  .calendar-header h3 {
+    font-size: 0.9rem !important;
+  }
+
+  .calendar-header button {
+    padding: 0.3rem !important;
+  }
+
+  .calendar-grid {
+    gap: 0.2rem !important;
+  }
+
+  .day-name {
+    font-size: 0.65rem !important;
+    padding-bottom: 0.2rem !important;
+  }
+
+  .calendar-day {
+    font-size: 0.75rem !important;
+    min-height: 32px !important;
+  }
+}
+
+/* ========================================
+   TABLET RESPONSIVE (768px - 1024px)
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* 2-column grid for tablets */
+  .dashboard-grid,
+  .landing-cards,
+  div[style*="gridTemplateColumns: repeat(auto-fill"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Adjust container widths */
+  .dashboard-container,
+  .landing-container,
+  .customer-reg-container {
+    max-width: 95% !important;
+    padding: 1.5rem !important;
+  }
+
+  /* Navigation adjustments */
+  .nav-link {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* Form adjustments */
+  .customer-reg-form {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Product cards */
+  .product-item {
+    padding: 1.25rem !important;
+  }
+
+  .product-img-wrapper {
+    height: 200px !important;
+  }
+}
+
+/* ========================================
+   LARGE TABLET/SMALL LAPTOP (1025px - 1280px)
+   ======================================== */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  /* 3-column grid */
+  .dashboard-grid,
+  div[style*="gridTemplateColumns: repeat(auto-fill"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Container adjustments */
+  .dashboard-container,
+  .landing-container {
+    max-width: 1100px !important;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+  /* Hide navigation and buttons */
+  .admin-nav,
+  .main-nav,
+  .nav-links,
+  button,
+  .btn-primary,
+  .btn-secondary {
+    display: none !important;
+  }
+
+  /* Optimize for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .glass-container {
+    background: white !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Page breaks */
+  .product-item,
+  .order-item {
+    page-break-inside: avoid !important;
+  }
+}
+
+/* ========================================
+   HIGH DPI DISPLAYS (Retina)
+   ======================================== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Sharper borders */
+  .glass-container,
+  .product-item,
+  .landing-card {
+    border-width: 0.5px !important;
+  }
+
+  /* Optimize images */
+  img {
+    image-rendering: -webkit-optimize-contrast !important;
+  }
+}
+
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+  /* Adjust for dark mode if needed */
+  .glass-container {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  input,
+  select,
+  textarea {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION SUPPORT
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
