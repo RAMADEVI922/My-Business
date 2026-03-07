@@ -40,6 +40,27 @@ export const useAppState = () => {
         }
     }, [isLoaded, isSignedIn, clerkSignOut]);
     
+    // Handle sign-out and cleanup
+    useEffect(() => {
+        if (isLoaded && !isSignedIn) {
+            // User has signed out, clean up app state
+            const wasSignedIn = sessionStorage.getItem('was_signed_in');
+            if (wasSignedIn === 'true') {
+                console.log('User signed out, cleaning up app state');
+                sessionStorage.removeItem('app_user');
+                sessionStorage.removeItem('app_cart');
+                sessionStorage.removeItem('is_admin');
+                sessionStorage.removeItem('customer_type');
+                sessionStorage.removeItem('store_admin_id');
+                sessionStorage.removeItem('was_signed_in');
+                setView('landing');
+            }
+        } else if (isSignedIn) {
+            // Mark that user is signed in
+            sessionStorage.setItem('was_signed_in', 'true');
+        }
+    }, [isLoaded, isSignedIn, setView]);
+    
     // Role-based access and auto-redirect
     useEffect(() => {
         if (!isLoaded) return;

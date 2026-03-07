@@ -62,6 +62,17 @@ function App() {
         logout 
     } = useAuth(setView);
 
+    // Cart management (must be before the useEffect that uses setCart)
+    const { 
+        cart,
+        setCart,
+        addToCart,
+        removeFromCart,
+        updateQty,
+        cartTotal,
+        cartCount 
+    } = useCart();
+
     // Synchronize Clerk user with app's currentUser
     useEffect(() => {
         if (isSignedIn && user) {
@@ -91,20 +102,11 @@ function App() {
                 updateAdminWithClerkId();
             }
         } else if (!isSignedIn) {
+            // User signed out - clean up state
             setCurrentUser(null);
+            setCart([]);
         }
-    }, [isSignedIn, user, setCurrentUser, adminId]);
-
-    // Cart management
-    const { 
-        cart,
-        setCart,
-        addToCart,
-        removeFromCart,
-        updateQty,
-        cartTotal,
-        cartCount 
-    } = useCart();
+    }, [isSignedIn, user, setCurrentUser, adminId, setCart]);
     
     // Products management
     const { 

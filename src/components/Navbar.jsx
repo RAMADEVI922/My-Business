@@ -56,7 +56,18 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
                 )}
                 
                 <div className="user-control-wrapper" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}>
-                    <UserButton afterSignOutUrl="/" />
+                    <UserButton 
+                        afterSignOutUrl="/"
+                        appearance={{
+                            elements: {
+                                userButtonPopoverActionButton__signOut: {
+                                    '&:hover': {
+                                        backgroundColor: '#fee2e2'
+                                    }
+                                }
+                            }
+                        }}
+                    />
                 </div>
             </div>
         </nav>
