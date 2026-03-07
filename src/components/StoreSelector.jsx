@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Store, ChevronDown, ShoppingBag, Sparkles } from 'lucide-react';
+import { Store, ChevronDown, ShoppingBag, Sparkles, Search, Home } from 'lucide-react';
 
 /**
  * Store Selector Component
@@ -8,6 +8,7 @@ import { Store, ChevronDown, ShoppingBag, Sparkles } from 'lucide-react';
  * Allows customers to select which admin store they want to shop from
  * Fetches all admin profiles and displays them in a dropdown
  * Shows store information and product preview when a store is selected
+ * Includes product search to find which admin sells a specific product
  */
 const StoreSelector = ({ setView }) => {
     const [admins, setAdmins] = useState([]);
@@ -16,6 +17,9 @@ const StoreSelector = ({ setView }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [highlightedAdmin, setHighlightedAdmin] = useState(null);
 
     useEffect(() => {
         fetchAdmins();
@@ -31,6 +35,48 @@ const StoreSelector = ({ setView }) => {
             console.error('Error fetching admins:', err);
             setError('Failed to load stores');
             setLoading(false);
+        }
+    };
+
+    const handleSearch = async (query) => {
+        setSearchQuery(query);
+        
+        if (!query.trim()) {
+            setSearchResults([]);
+            setHighlightedAdmin(null);
+            return;
+        }
+
+        try {
+            const { getProducts } = await import('../aws-config');
+            const results = [];
+            
+            // Search products from all admins
+            for (const admin of admins) {
+                const adminProducts = await getProducts(admin.clerkUserId);
+                const matchingProducts = adminProducts.filter(product => 
+                    product.name.toLowerCase().includes(query.toLowerCase()) ||
+                    product.description?.toLowerCase().includes(query.toLowerCase())
+                );
+                
+                if (matchingProducts.length > 0) {
+                    results.push({
+                        admin,
+                        products: matchingProducts
+                    });
+                }
+            }
+            
+            setSearchResults(results);
+            
+            // Highlight the first admin if results found
+            if (results.length > 0) {
+                setHighlightedAdmin(results[0].admin.clerkUserId);
+            } else {
+                setHighlightedAdmin(null);
+            }
+        } catch (err) {
+            console.error('Error searching products:', err);
         }
     };
 
@@ -90,6 +136,44 @@ const StoreSelector = ({ setView }) => {
                 minHeight: '100vh'
             }}
         >
+            {/* Home Button */}
+            <motion.button
+                onClick={() => setView('welcome')}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.05, x: -5 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                    position: 'absolute',
+                    top: '2rem',
+                    left: '2rem',
+                    padding: '0.75rem 1.25rem',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '2px solid rgba(194, 120, 53, 0.5)',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.3s',
+                    backdropFilter: 'blur(10px)'
+                }}
+                onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(194, 120, 53, 0.3)';
+                    e.target.style.borderColor = '#c27835';
+                }}
+                onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.target.style.borderColor = 'rgba(194, 120, 53, 0.5)';
+                }}
+            >
+                <Home size={18} />
+                <span>Home</span>
+            </motion.button>
+
             {/* Header Section */}
             <motion.div 
                 initial={{ opacity: 0, y: -20 }}
@@ -153,6 +237,186 @@ const StoreSelector = ({ setView }) => {
                 </motion.div>
             )}
 
+            {/* Search Bar */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                style={{ marginBottom: '2rem' }}
+            >
+                <label style={{ 
+                    display: 'block', 
+                    marginBottom: '0.5rem', 
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    color: '#fff'
+                }}>
+                    Search Products
+                </label>
+                <div style={{ position: 'relative' }}>
+                    <Search 
+                        size={18} 
+                        style={{ 
+                            position: 'absolute', 
+                            left: '1rem', 
+                            top: '50%', 
+                            transform: 'translateY(-50%)',
+                            color: '#c27835',
+                            pointerEvents: 'none'
+                        }} 
+                    />
+                    <input
+                        type="text"
+                        placeholder="Search for products..."
+                        value={searchQuery}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem 1rem 0.75rem 2.75rem',
+                            fontSize: '0.95rem',
+                            border: '2px solid #c27835',
+                            borderRadius: '8px',
+                            background: 'white',
+                            fontWeight: 500,
+                            color: '#333',
+                            transition: 'all 0.3s',
+                            boxShadow: '0 2px 8px rgba(194, 120, 53, 0.2)',
+                            outline: 'none'
+                        }}
+                        onFocus={(e) => {
+                            e.target.style.borderColor = '#d97706';
+                            e.target.style.boxShadow = '0 4px 14px rgba(194, 120, 53, 0.4)';
+                            e.target.style.transform = 'translateY(-1px)';
+                        }}
+                        onBlur={(e) => {
+                            e.target.style.borderColor = '#c27835';
+                            e.target.style.boxShadow = '0 2px 8px rgba(194, 120, 53, 0.2)';
+                            e.target.style.transform = 'translateY(0)';
+                        }}
+                    />
+                </div>
+            </motion.div>
+
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ marginBottom: '2rem' }}
+                >
+                    <h3 style={{ 
+                        color: '#fff', 
+                        marginBottom: '1rem',
+                        fontSize: '1.1rem',
+                        fontWeight: 700
+                    }}>
+                        Found in {searchResults.length} store{searchResults.length > 1 ? 's' : ''}:
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {searchResults.map(({ admin, products: matchedProducts }) => (
+                            <motion.div
+                                key={admin.clerkUserId}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                whileHover={{ scale: 1.02 }}
+                                onClick={() => {
+                                    setSelectedAdmin(admin.clerkUserId);
+                                    handleAdminSelect(admin.clerkUserId);
+                                    setHighlightedAdmin(admin.clerkUserId);
+                                }}
+                                style={{
+                                    padding: '1rem',
+                                    background: highlightedAdmin === admin.clerkUserId 
+                                        ? 'linear-gradient(135deg, rgba(194, 120, 53, 0.2), rgba(217, 119, 6, 0.2))'
+                                        : 'rgba(255, 255, 255, 0.1)',
+                                    borderRadius: '10px',
+                                    border: highlightedAdmin === admin.clerkUserId 
+                                        ? '2px solid #c27835' 
+                                        : '2px solid rgba(255, 255, 255, 0.2)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                <div style={{ 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between', 
+                                    alignItems: 'center',
+                                    marginBottom: '0.75rem'
+                                }}>
+                                    <div>
+                                        <h4 style={{ 
+                                            color: '#fff', 
+                                            fontSize: '1rem',
+                                            fontWeight: 700,
+                                            marginBottom: '0.25rem'
+                                        }}>
+                                            {admin.storeName || admin.username}
+                                        </h4>
+                                        <p style={{ 
+                                            color: '#ccc', 
+                                            fontSize: '0.85rem' 
+                                        }}>
+                                            {matchedProducts.length} matching product{matchedProducts.length > 1 ? 's' : ''}
+                                        </p>
+                                    </div>
+                                    <Store size={24} color="#c27835" />
+                                </div>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    gap: '0.5rem', 
+                                    flexWrap: 'wrap' 
+                                }}>
+                                    {matchedProducts.slice(0, 3).map(product => (
+                                        <div
+                                            key={product.id}
+                                            style={{
+                                                padding: '0.4rem 0.75rem',
+                                                background: 'rgba(194, 120, 53, 0.3)',
+                                                borderRadius: '6px',
+                                                fontSize: '0.85rem',
+                                                color: '#fff',
+                                                fontWeight: 600
+                                            }}
+                                        >
+                                            {product.name}
+                                        </div>
+                                    ))}
+                                    {matchedProducts.length > 3 && (
+                                        <div style={{
+                                            padding: '0.4rem 0.75rem',
+                                            background: 'rgba(194, 120, 53, 0.2)',
+                                            borderRadius: '6px',
+                                            fontSize: '0.85rem',
+                                            color: '#ccc',
+                                            fontWeight: 600
+                                        }}>
+                                            +{matchedProducts.length - 3} more
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            )}
+
+            {searchQuery && searchResults.length === 0 && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    style={{
+                        padding: '1.5rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        borderRadius: '10px',
+                        textAlign: 'center',
+                        marginBottom: '2rem',
+                        color: '#ccc'
+                    }}
+                >
+                    No products found matching "{searchQuery}"
+                </motion.div>
+            )}
+
             {/* Store Selector Dropdown */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -162,9 +426,9 @@ const StoreSelector = ({ setView }) => {
             >
                 <label style={{ 
                     display: 'block', 
-                    marginBottom: '0.75rem', 
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
+                    marginBottom: '0.5rem', 
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
                     color: '#fff'
                 }}>
                     Select Store
@@ -175,26 +439,29 @@ const StoreSelector = ({ setView }) => {
                         onChange={(e) => handleAdminSelect(e.target.value)}
                         style={{
                             width: '100%',
-                            padding: '1.25rem',
-                            fontSize: '1.1rem',
+                            padding: '0.75rem 1rem',
+                            paddingBottom: '2rem',
+                            fontSize: '0.95rem',
                             border: '2px solid #c27835',
-                            borderRadius: '12px',
+                            borderRadius: '8px',
                             appearance: 'none',
-                            background: 'white',
+                            background: highlightedAdmin 
+                                ? 'linear-gradient(135deg, #fff9f0, #ffffff)'
+                                : 'white',
                             cursor: 'pointer',
                             fontWeight: 600,
                             color: selectedAdmin ? '#333' : '#666',
                             transition: 'all 0.3s',
-                            boxShadow: '0 4px 12px rgba(194, 120, 53, 0.2)'
+                            boxShadow: '0 2px 8px rgba(194, 120, 53, 0.2)'
                         }}
                         onFocus={(e) => {
                             e.target.style.borderColor = '#d97706';
-                            e.target.style.boxShadow = '0 6px 20px rgba(194, 120, 53, 0.4)';
-                            e.target.style.transform = 'translateY(-2px)';
+                            e.target.style.boxShadow = '0 4px 14px rgba(194, 120, 53, 0.4)';
+                            e.target.style.transform = 'translateY(-1px)';
                         }}
                         onBlur={(e) => {
                             e.target.style.borderColor = '#c27835';
-                            e.target.style.boxShadow = '0 4px 12px rgba(194, 120, 53, 0.2)';
+                            e.target.style.boxShadow = '0 2px 8px rgba(194, 120, 53, 0.2)';
                             e.target.style.transform = 'translateY(0)';
                         }}
                     >
@@ -206,17 +473,21 @@ const StoreSelector = ({ setView }) => {
                         ))}
                     </select>
                     <motion.div
-                        animate={{ y: [0, 3, 0] }}
+                        animate={{ y: [0, 2, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
+                        style={{
+                            position: 'absolute',
+                            left: '50%',
+                            bottom: '0.4rem',
+                            transform: 'translateX(-50%)',
+                            pointerEvents: 'none',
+                            display: 'flex',
+                            justifyContent: 'center'
+                        }}
                     >
                         <ChevronDown 
-                            size={24} 
+                            size={18} 
                             style={{ 
-                                position: 'absolute', 
-                                right: '1.25rem', 
-                                top: '50%', 
-                                transform: 'translateY(-50%)',
-                                pointerEvents: 'none',
                                 color: '#c27835'
                             }} 
                         />
@@ -351,33 +622,33 @@ const StoreSelector = ({ setView }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 whileHover={selectedAdmin ? { 
-                    scale: 1.03, 
-                    y: -4,
-                    boxShadow: '0 12px 32px rgba(194, 120, 53, 0.5)'
+                    scale: 1.02, 
+                    y: -2,
+                    boxShadow: '0 8px 24px rgba(194, 120, 53, 0.5)'
                 } : {}}
-                whileTap={selectedAdmin ? { scale: 0.97 } : {}}
+                whileTap={selectedAdmin ? { scale: 0.98 } : {}}
                 style={{
                     width: '100%',
-                    padding: '1.75rem',
-                    fontSize: '1.4rem',
-                    fontWeight: 800,
+                    padding: '0.75rem 1.25rem',
+                    fontSize: '1rem',
+                    fontWeight: 700,
                     background: selectedAdmin 
                         ? 'linear-gradient(135deg, #c27835 0%, #d97706 50%, #ea580c 100%)' 
                         : 'linear-gradient(135deg, #999, #888)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '16px',
+                    borderRadius: '8px',
                     cursor: selectedAdmin ? 'pointer' : 'not-allowed',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '1rem',
+                    gap: '0.6rem',
                     transition: 'all 0.3s',
                     boxShadow: selectedAdmin 
-                        ? '0 8px 24px rgba(194, 120, 53, 0.4)' 
-                        : '0 4px 12px rgba(0,0,0,0.2)',
+                        ? '0 4px 16px rgba(194, 120, 53, 0.4)' 
+                        : '0 2px 8px rgba(0,0,0,0.2)',
                     textTransform: 'uppercase',
-                    letterSpacing: '1px',
+                    letterSpacing: '0.5px',
                     position: 'relative',
                     overflow: 'hidden'
                 }}
@@ -403,7 +674,7 @@ const StoreSelector = ({ setView }) => {
                         }}
                     />
                 )}
-                <ShoppingBag size={28} />
+                <ShoppingBag size={20} />
                 <span>Shop Now</span>
             </motion.button>
         </motion.div>

@@ -7,12 +7,14 @@ export const handleSelectCustomerType = (type, isSignedIn, setView) => {
     sessionStorage.setItem('clerk_mode', 'customer');
     sessionStorage.setItem('customer_type', type);
     
-    // Only reload if switching from admin to customer mode, or if no mode was set
+    // Always go to register page for customer type selection
+    // Reload if switching from admin mode or no mode was set
     if (currentMode === 'admin' || !currentMode) {
         sessionStorage.setItem('app_view', 'register');
         console.log('Switching to Customer mode - reloading to load customer Clerk instance');
         window.location.reload();
     } else {
+        // Already in customer mode, just navigate to register
         setView('register');
     }
 };
