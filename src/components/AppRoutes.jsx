@@ -165,7 +165,7 @@ const AppRoutes = ({
                 />
             )}
             
-            {view === 'contact' && <ContactUs setView={setView} />}
+            {view === 'contact' && <ContactUs setView={setView} customerAdminId={customerAdminId} />}
             
             {view === 'login' && (
                 <AdminLogin

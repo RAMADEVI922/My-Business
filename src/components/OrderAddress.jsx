@@ -40,7 +40,7 @@ const OrderAddress = ({
                     <textarea
                         rows={3}
                         placeholder="Enter your full delivery address…"
-                        className="input-field"
+                        className="input-field black-placeholder"
                         style={{ resize: 'vertical', fontFamily: 'inherit', color: '#2d1e12', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px' }}
                         value={orderDetails.address}
                         onChange={(e) => setOrderDetails(prev => ({ ...prev, address: e.target.value }))}
@@ -53,7 +53,7 @@ const OrderAddress = ({
                     <input
                         type="text"
                         placeholder="Enter your 6-digit pincode"
-                        className="input-field"
+                        className="input-field black-placeholder"
                         style={{ color: '#2d1e12', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px' }}
                         value={orderDetails.pincode}
                         onChange={(e) => setOrderDetails(prev => ({ ...prev, pincode: e.target.value }))}
@@ -68,7 +68,23 @@ const OrderAddress = ({
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <select
                             className="input-field"
-                            style={{ color: '#2d1e12', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 8px', width: '100px', flexShrink: 0 }}
+                            style={{ 
+                                color: '#2d1e12', 
+                                background: '#f5f5f5', 
+                                border: '1px solid #ddd', 
+                                padding: '12px 8px', 
+                                width: '100px', 
+                                flexShrink: 0,
+                                borderRadius: '8px',
+                                fontSize: '0.9rem',
+                                fontWeight: 600,
+                                appearance: 'none',
+                                backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23666\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6,9 12,15 18,9\'%3e%3c/polyline%3e%3c/svg%3e")',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'right 8px center',
+                                backgroundSize: '16px',
+                                paddingRight: '32px'
+                            }}
                             value={orderDetails.countryCode}
                             onChange={(e) => setOrderDetails(prev => ({ ...prev, countryCode: e.target.value }))}
                         >
@@ -81,7 +97,7 @@ const OrderAddress = ({
                         <input
                             type="tel"
                             placeholder="Mobile Number"
-                            className="input-field light-input"
+                            className="input-field light-input black-placeholder"
                             style={{ color: '#2d1e12', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px', flexGrow: 1 }}
                             value={orderDetails.phone}
                             onChange={(e) => setOrderDetails(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '') }))}

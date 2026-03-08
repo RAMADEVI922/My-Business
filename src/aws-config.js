@@ -190,7 +190,9 @@ export const getAdminProfiles = async () => {
                     clerkUserId: admin.clerkUserId,
                     username: admin.username,
                     email: admin.email || admin.Email,
-                    storeName: admin.storeName || admin.username || admin.email || admin.Email
+                    storeName: admin.storeName || admin.username || admin.email || admin.Email,
+                    phone: admin.phone || admin.Phone || '+91 9849924480', // Default phone
+                    contactEmail: admin.contactEmail || admin.email || admin.Email || 'rsunkara03@gmail.com' // Contact email
                 });
             }
         }
@@ -200,6 +202,65 @@ export const getAdminProfiles = async () => {
     } catch (error) {
         console.error('❌ Error fetching admin profiles:', error);
         return [];
+    }
+};
+
+export const getAdminContactInfo = async (adminId) => {
+    try {
+        if (!adminId) {
+            // Return default contact info if no admin selected
+            return {
+                storeName: 'Customer Support',
+                contactEmail: 'rsunkara03@gmail.com',
+                phone: '+91 9849924480'
+            };
+        }
+
+        const command = new ScanCommand({
+            TableName: adminTableName,
+            FilterExpression: 'clerkUserId = :adminId',
+            ExpressionAttributeValues: {
+                ':adminId': adminId
+            }
+        });
+        
+        const result = await docClient.send(command);
+        const admin = result.Items?.[0];
+        
+        if (admin) {
+            // Get phone number with specific admin mappings
+            let phoneNumber = admin.phone || admin.Phone;
+            
+            // Specific phone number mappings for known admins
+            if (!phoneNumber) {
+                const username = (admin.username || '').toLowerCase();
+                if (username.includes('sai') && username.includes('satyavarapu')) {
+                    phoneNumber = '+91 8143093908';
+                } else {
+                    phoneNumber = '+91 9849924480'; // Default
+                }
+            }
+            
+            return {
+                storeName: admin.storeName || admin.username || 'Store',
+                contactEmail: admin.contactEmail || admin.email || admin.Email || 'rsunkara03@gmail.com',
+                phone: phoneNumber
+            };
+        }
+        
+        // Fallback to default
+        return {
+            storeName: 'Customer Support',
+            contactEmail: 'rsunkara03@gmail.com',
+            phone: '+91 9849924480'
+        };
+    } catch (error) {
+        console.error('Error fetching admin contact info:', error);
+        return {
+            storeName: 'Customer Support',
+            contactEmail: 'rsunkara03@gmail.com',
+            phone: '+91 9849924480'
+        };
     }
 };
 

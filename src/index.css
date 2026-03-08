@@ -27,6 +27,53 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Black placeholder text styling */
+.black-placeholder::placeholder {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+.black-placeholder::-webkit-input-placeholder {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+.black-placeholder::-moz-placeholder {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+.black-placeholder:-ms-input-placeholder {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+/* Select dropdown styling */
+select.input-field {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+select.input-field option {
+  background: #ffffff;
+  color: #2d1e12;
+  padding: 8px;
+  font-weight: 600;
+}
+
+select.input-field:focus {
+  outline: none;
+  border-color: #c27835;
+  box-shadow: 0 0 0 2px rgba(194, 120, 53, 0.2);
+}
+
 #root {
   width: 100%;
 }
