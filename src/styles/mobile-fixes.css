@@ -3258,3 +3258,169 @@ html, body {
     padding-right: 24px !important;
   }
 }
+
+
+/* ========================================
+   ADMIN NAVBAR MOBILE HAMBURGER MENU
+   ======================================== */
+@media (max-width: 767px) {
+  /* Admin Nav - Horizontal layout with hamburger */
+  .admin-nav {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(15, 15, 15, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid rgba(194, 120, 53, 0.3) !important;
+  }
+
+  /* Show hamburger menu button on mobile */
+  .admin-nav .mobile-menu-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    z-index: 1001 !important;
+  }
+
+  /* Hide desktop logout button on mobile */
+  .admin-nav .desktop-logout {
+    display: none !important;
+  }
+
+  /* Nav links - Hidden by default, shown when menu open */
+  .admin-nav .nav-links {
+    position: fixed !important;
+    top: 0 !important;
+    right: -100% !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    background: rgba(15, 15, 15, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    padding: 5rem 1rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    z-index: 999 !important;
+    transition: right 0.3s ease !important;
+    border-left: 1px solid rgba(194, 120, 53, 0.3) !important;
+    overflow-y: auto !important;
+  }
+
+  /* Nav links - Open state */
+  .admin-nav .nav-links.mobile-open {
+    right: 0 !important;
+  }
+
+  /* Show mobile overlay when menu is open */
+  .admin-nav .nav-links.mobile-open ~ .mobile-menu-overlay {
+    display: block !important;
+  }
+
+  /* Nav link items - Full width in mobile menu */
+  .admin-nav .nav-links a {
+    width: 100% !important;
+    padding: 1rem !important;
+    font-size: 1rem !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    color: var(--text-secondary) !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .admin-nav .nav-links a:hover {
+    background: rgba(194, 120, 53, 0.1) !important;
+    color: var(--text-primary) !important;
+  }
+
+  .admin-nav .nav-links a.active {
+    background: var(--accent-color) !important;
+    color: white !important;
+  }
+
+  /* Mobile logout button - Show in mobile menu */
+  .admin-nav .nav-links .mobile-logout {
+    display: flex !important;
+    width: 100% !important;
+    padding: 1rem !important;
+    font-size: 1rem !important;
+    border-radius: 12px !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    margin-top: auto !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #ef4444 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .admin-nav .nav-links .mobile-logout:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #ef4444 !important;
+  }
+
+  /* Nav logo - Compact on mobile */
+  .admin-nav .nav-logo {
+    font-size: 1rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .admin-nav .nav-logo svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  /* Adjust content padding for fixed navbar */
+  .dashboard-container {
+    padding-top: 5rem !important;
+  }
+}
+
+/* Desktop - Hide mobile elements */
+@media (min-width: 768px) {
+  .admin-nav .mobile-menu-toggle {
+    display: none !important;
+  }
+
+  .admin-nav .mobile-logout {
+    display: none !important;
+  }
+
+  .admin-nav .desktop-logout {
+    display: flex !important;
+  }
+
+  .admin-nav .mobile-menu-overlay {
+    display: none !important;
+  }
+}
+
+/* Tablet - Adjust admin navbar */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .admin-nav {
+    padding: 0.75rem 1.5rem !important;
+  }
+
+  .admin-nav .nav-links {
+    gap: 1rem !important;
+  }
+
+  .admin-nav .nav-links a {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+}
