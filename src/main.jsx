@@ -2,7 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ClerkProvider } from '@clerk/react'
+import { ThemeProvider } from '@mui/material/styles'
+import { CssBaseline } from '@mui/material'
 import App from './App.jsx'
+import { theme } from './theme/theme.js'
 import './styles/index.css'
 import './styles/mobile-fixes.css'
 
@@ -32,7 +35,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <ClerkProvider publishableKey={FINAL_KEY} afterSignOutUrl="/">
             <BrowserRouter>
-                <App />
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <App />
+                </ThemeProvider>
             </BrowserRouter>
         </ClerkProvider>
     </React.StrictMode>,
