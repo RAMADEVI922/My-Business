@@ -2341,3 +2341,40 @@ html, body {
     will-change: auto !important;
   }
 }
+
+/* ========================================
+   USER NAME DISPLAY RESPONSIVE
+   ======================================== */
+
+/* Mobile - Hide "Welcome," text, show only name */
+@media (max-width: 767px) {
+  .user-control-wrapper span span:first-child {
+    display: none !important;
+  }
+  
+  .user-control-wrapper {
+    gap: 0.5rem !important;
+  }
+  
+  .user-control-wrapper > span {
+    font-size: 0.85rem !important;
+    max-width: 100px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Tablet - Show full name */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .user-control-wrapper > span {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Desktop - Full display */
+@media (min-width: 1025px) {
+  .user-control-wrapper {
+    gap: 0.75rem !important;
+  }
+}

@@ -55,7 +55,20 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
                     </button>
                 )}
                 
-                <div className="user-control-wrapper" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}>
+                <div className="user-control-wrapper" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    {user && (
+                        <span style={{ 
+                            color: '#c27835', 
+                            fontWeight: 600, 
+                            fontSize: '0.95rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem'
+                        }}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Welcome,</span>
+                            {user.firstName || user.username || user.emailAddresses[0]?.emailAddress?.split('@')[0]}
+                        </span>
+                    )}
                     <UserButton 
                         afterSignOutUrl="/"
                         appearance={{
