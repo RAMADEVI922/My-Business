@@ -1952,3 +1952,407 @@ html, body {
     font-size: 0.75rem !important;
   }
 }
+
+
+/* ========================================
+   FIX BUTTON BLINKING ON MOBILE DEVICES
+   ======================================== */
+
+/* Disable hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove all hover effects on touch devices */
+  button:hover,
+  a:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .nav-link:hover,
+  .landing-card:hover,
+  .product-item:hover,
+  .recommendation-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: inherit !important;
+    border-color: inherit !important;
+  }
+
+  /* Disable hover animations */
+  *:hover {
+    animation: none !important;
+  }
+
+  /* Remove hover transitions that cause flickering */
+  button,
+  a,
+  .btn-primary,
+  .btn-secondary,
+  .nav-link {
+    transition: none !important;
+  }
+
+  /* Disable pulsing animations on mobile */
+  @keyframes login-pulse {
+    0%, 100% {
+      box-shadow: none !important;
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: none !important;
+    }
+  }
+
+  /* Stop infinite animations on mobile */
+  .admin-access-btn,
+  .main-nav .nav-links button.nav-link {
+    animation: none !important;
+  }
+}
+
+/* ========================================
+   PREVENT ANIMATION LOOPS ON MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+  /* Disable infinite animations */
+  *[style*="animation"] {
+    animation-iteration-count: 1 !important;
+  }
+
+  /* Stop shine animation on mobile */
+  .cart-title-highlight,
+  .welcome-title {
+    animation: none !important;
+    background: var(--accent-color) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  /* Disable floating animation */
+  .welcome-logo-box {
+    animation: none !important;
+  }
+
+  /* Remove pulse animations from buttons */
+  .admin-access-btn,
+  .main-nav .nav-links button.nav-link {
+    animation: none !important;
+    box-shadow: 0 4px 15px rgba(194, 120, 53, 0.3) !important;
+  }
+
+  /* Disable shimmer effects */
+  .progress-bar-fill::after {
+    animation: none !important;
+  }
+
+  /* Stop skeleton loading animations */
+  .skeleton {
+    animation: none !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+}
+
+/* ========================================
+   STABLE BUTTON STATES FOR MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+  /* Ensure buttons have stable styling */
+  button,
+  .btn-primary,
+  .btn-secondary {
+    -webkit-tap-highlight-color: rgba(194, 120, 53, 0.2) !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    transform: translateZ(0) !important;
+    will-change: auto !important;
+  }
+
+  /* Remove transform on active state to prevent flicker */
+  button:active,
+  .btn-primary:active,
+  .btn-secondary:active {
+    transform: translateZ(0) scale(0.98) !important;
+  }
+
+  /* Stable navigation links */
+  .nav-link {
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+
+  /* Prevent card flickering */
+  .landing-card,
+  .product-item,
+  .glass-container {
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    transform: translateZ(0) !important;
+  }
+}
+
+/* ========================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ======================================== */
+@media (hover: none) {
+  /* Active state for touch feedback */
+  button:active,
+  a:active,
+  .btn-primary:active,
+  .btn-secondary:active {
+    opacity: 0.8 !important;
+    transform: scale(0.98) !important;
+    transition: opacity 0.1s ease, transform 0.1s ease !important;
+  }
+
+  /* Remove conflicting hover states */
+  .landing-card:hover,
+  .product-item:hover,
+  .recommendation-card:hover {
+    transform: none !important;
+    box-shadow: inherit !important;
+  }
+
+  /* Stable card states */
+  .landing-card,
+  .product-item,
+  .recommendation-card {
+    transition: none !important;
+  }
+}
+
+/* ========================================
+   DISABLE PROBLEMATIC ANIMATIONS ON MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+  /* Remove shine animation */
+  @keyframes shine {
+    to {
+      background-position: 100% center;
+    }
+  }
+
+  /* Remove float animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+  }
+
+  /* Remove pulse animations */
+  @keyframes pulse-mic {
+    0%, 100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Disable all keyframe animations on buttons */
+  button[style*="animation"],
+  .btn-primary[style*="animation"],
+  .admin-access-btn {
+    animation: none !important;
+  }
+}
+
+/* ========================================
+   PREVENT WEBKIT FLICKERING
+   ======================================== */
+@media (max-width: 767px) {
+  /* Hardware acceleration fixes */
+  button,
+  .btn-primary,
+  .btn-secondary,
+  .nav-link,
+  .landing-card,
+  .product-item {
+    -webkit-transform: translateZ(0) !important;
+    -webkit-font-smoothing: antialiased !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+    perspective: 1000px !important;
+  }
+
+  /* Prevent repaint issues */
+  * {
+    -webkit-transform: translateZ(0) !important;
+  }
+}
+
+/* ========================================
+   STABLE TRANSITIONS FOR MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+  /* Use simpler transitions */
+  button,
+  a,
+  .btn-primary,
+  .btn-secondary {
+    transition: opacity 0.15s ease !important;
+  }
+
+  /* Remove complex transitions */
+  .landing-card,
+  .product-item,
+  .glass-container {
+    transition: none !important;
+  }
+
+  /* Disable transform transitions */
+  *[style*="transition: all"],
+  *[style*="transition: transform"] {
+    transition: opacity 0.15s ease !important;
+  }
+}
+
+/* ========================================
+   FIX NAVIGATION BUTTON BLINKING
+   ======================================== */
+@media (max-width: 767px) {
+  /* Stable nav buttons */
+  .main-nav .nav-links button,
+  .admin-nav .nav-links a {
+    animation: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease !important;
+  }
+
+  /* Remove pulse from login button */
+  .main-nav .nav-links button.nav-link {
+    animation: none !important;
+    box-shadow: 0 4px 15px rgba(194, 120, 53, 0.3) !important;
+  }
+
+  .main-nav .nav-links button.nav-link::before {
+    display: none !important;
+  }
+
+  /* Stable admin access button */
+  .admin-access-btn {
+    animation: none !important;
+    box-shadow: 0 4px 15px rgba(194, 120, 53, 0.3) !important;
+  }
+
+  .admin-access-btn::before {
+    display: none !important;
+  }
+}
+
+/* ========================================
+   DESKTOP ONLY: KEEP HOVER EFFECTS
+   ======================================== */
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  /* Enable hover effects only on desktop */
+  button:hover,
+  .btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(194, 120, 53, 0.4) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .landing-card:hover {
+    transform: translateY(-10px) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .product-item:hover {
+    transform: translateY(-5px) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* Keep animations on desktop */
+  .admin-access-btn {
+    animation: pulse-glow 2s infinite !important;
+  }
+
+  .main-nav .nav-links button.nav-link {
+    animation: login-pulse 2.5s infinite !important;
+  }
+
+  .welcome-title {
+    animation: shine 4s linear infinite !important;
+  }
+
+  .welcome-logo-box {
+    animation: float 3s ease-in-out infinite !important;
+  }
+}
+
+/* ========================================
+   PREVENT BUTTON FOCUS FLICKERING
+   ======================================== */
+@media (max-width: 767px) {
+  /* Stable focus states */
+  button:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 2px solid #c27835 !important;
+    outline-offset: 2px !important;
+    animation: none !important;
+  }
+
+  /* Remove focus animations */
+  *:focus {
+    animation: none !important;
+  }
+}
+
+/* ========================================
+   REDUCE MOTION FOR ACCESSIBILITY
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all animations */
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Remove transforms */
+  button:hover,
+  .landing-card:hover,
+  .product-item:hover {
+    transform: none !important;
+  }
+}
+
+/* ========================================
+   FIX CLERK COMPONENT FLICKERING
+   ======================================== */
+@media (max-width: 767px) {
+  /* Stable Clerk buttons */
+  .cl-formButtonPrimary,
+  .cl-button {
+    animation: none !important;
+    transition: background-color 0.15s ease !important;
+    backface-visibility: hidden !important;
+  }
+
+  .cl-formButtonPrimary:hover {
+    transform: none !important;
+  }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+@media (max-width: 767px) {
+  /* Optimize rendering */
+  * {
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+
+  /* Reduce repaints */
+  button,
+  .btn-primary,
+  .btn-secondary {
+    contain: layout style paint !important;
+  }
+
+  /* Optimize compositing */
+  .glass-container,
+  .landing-card,
+  .product-item {
+    will-change: auto !important;
+  }
+}
