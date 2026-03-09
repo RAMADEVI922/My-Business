@@ -3424,3 +3424,223 @@ html, body {
     font-size: 0.9rem !important;
   }
 }
+
+
+/* ========================================
+   CUSTOMER NAVBAR DRAWER LOGOUT BUTTON
+   ======================================== */
+@media (max-width: 767px) {
+  /* Ensure logout button is visible and prominent */
+  .MuiDrawer-paper .MuiButton-outlined {
+    min-height: 52px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    border-width: 2px !important;
+  }
+
+  /* User info section in drawer */
+  .MuiDrawer-paper .MuiBox-root {
+    touch-action: manipulation !important;
+  }
+
+  /* Ensure proper spacing for user section */
+  .MuiDrawer-paper > div {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+}
+
+
+/* ========================================
+   STORE SELECTOR MOBILE LAYOUT
+   ======================================== */
+@media (max-width: 767px) {
+  /* Store Selector Header - Responsive */
+  .store-selector-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+  }
+
+  /* Home button - Full width on mobile */
+  .store-selector-header button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Store icon - Smaller on mobile */
+  .store-selector-header svg {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  /* Hide spacer on mobile */
+  .store-selector-header > div:last-child {
+    display: none !important;
+  }
+
+  /* Title - Smaller on mobile */
+  h1[style*="fontSize: '2.5rem'"] {
+    font-size: 2rem !important;
+  }
+
+  /* Subtitle - Smaller on mobile */
+  p[style*="fontSize: '1.1rem'"] {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 374px) {
+  h1[style*="fontSize: '2.5rem'"] {
+    font-size: 1.75rem !important;
+  }
+}
+
+
+/* ========================================
+   MY ORDERS PAGE MOBILE FIXES
+   ======================================== */
+@media (max-width: 767px) {
+  /* Ensure proper spacing for My Orders page */
+  .order-view {
+    padding-top: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* My Orders title */
+  .order-view h2 {
+    font-size: 1.75rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Back button and refresh button container */
+  .order-view > div:first-child {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Order cards */
+  .order-view .glass-container {
+    padding: 1rem !important;
+  }
+
+  /* Order ID and status badges */
+  .order-id-highlight {
+    font-size: 0.8rem !important;
+  }
+
+  /* Status badge */
+  span[style*="borderRadius: '20px'"] {
+    font-size: 0.7rem !important;
+    padding: 3px 8px !important;
+  }
+
+  /* Empty state */
+  .order-view .glass-container[style*="textAlign: 'center'"] {
+    padding: 2rem 1rem !important;
+  }
+
+  /* Start Shopping button in empty state */
+  .order-view .btn-primary {
+    width: 100% !important;
+  }
+}
+
+/* ========================================
+   FIX NAVBAR OVERLAP ON MY ORDERS
+   ======================================== */
+@media (max-width: 767px) {
+  /* Ensure content doesn't hide under MUI navbar */
+  body:has(.MuiAppBar-root) .order-view {
+    padding-top: 80px !important;
+  }
+
+  /* Fix MUI AppBar on My Orders page */
+  .MuiAppBar-root {
+    background: rgba(15, 15, 15, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  /* Ensure toolbar is properly sized */
+  .MuiAppBar-root .MuiToolbar-root {
+    min-height: 64px !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  /* Fix logo/brand positioning */
+  .MuiAppBar-root .MuiBox-root {
+    display: flex !important;
+    align-items: center !important;
+  }
+}
+
+
+/* ========================================
+   FIX NAVBAR RENDERING ISSUES
+   ======================================== */
+@media (max-width: 767px) {
+  /* Remove any strange outlines or borders */
+  .MuiAppBar-root *,
+  .MuiToolbar-root *,
+  .MuiIconButton-root {
+    outline: none !important;
+  }
+
+  /* Fix hamburger menu button */
+  .MuiIconButton-root[aria-label="open drawer"] {
+    background: none !important;
+    border: none !important;
+    padding: 8px !important;
+  }
+
+  /* Ensure proper icon sizing */
+  .MuiIconButton-root svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  /* Fix any circular artifacts */
+  .MuiAppBar-root::before,
+  .MuiAppBar-root::after,
+  .MuiToolbar-root::before,
+  .MuiToolbar-root::after {
+    display: none !important;
+  }
+
+  /* Ensure clean background */
+  .MuiAppBar-root {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* Fix brand/logo area */
+  .MuiAppBar-root .MuiTypography-h6 {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* Cart icon in navbar */
+  .MuiAppBar-root .MuiBadge-root {
+    margin-right: 0 !important;
+  }
+}
+
+/* ========================================
+   MY ORDERS EMPTY STATE MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+  /* Empty orders icon */
+  .order-view svg[size="48"] {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Empty state text */
+  .order-view .glass-container p {
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+  }
+}

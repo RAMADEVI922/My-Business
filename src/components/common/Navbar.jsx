@@ -16,6 +16,7 @@ import {
   Container,
   useTheme,
   useMediaQuery,
+  Divider,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -24,10 +25,11 @@ import {
   ListAlt,
   ContactMail,
   Close,
+  Logout,
 } from '@mui/icons-material';
 import { UserButton, useUser } from '@clerk/react';
 
-export default function Navbar({ currentUser, cartCount, onNavigate }) {
+export default function Navbar({ currentUser, cartCount, onNavigate, onLogout }) {
   const { isSignedIn, user } = useUser();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -110,8 +112,10 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
         )}
       </List>
 
+      {/* User Info and Logout Section */}
       {isSignedIn && user && (
-        <Box sx={{ px: 2, pb: 2, mt: 'auto' }}>
+        <Box sx={{ px: 2, pb: 2, mt: 'auto', borderTop: '1px solid rgba(194, 120, 53, 0.2)', pt: 2 }}>
+          {/* User Info */}
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -119,6 +123,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
             p: 1.5,
             backgroundColor: 'rgba(194, 120, 53, 0.1)',
             borderRadius: 2,
+            mb: 1.5,
           }}>
             <UserButton 
               afterSignOutUrl="/"
@@ -142,7 +147,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
                 }
               }}
             />
-            <Box>
+            <Box sx={{ flex: 1 }}>
               <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
                 Welcome,
               </Typography>
@@ -151,6 +156,30 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
               </Typography>
             </Box>
           </Box>
+
+          {/* Logout Button */}
+          <Button
+            fullWidth
+            variant="outlined"
+            startIcon={<Logout />}
+            onClick={() => {
+              setMobileOpen(false);
+              if (onLogout) {
+                onLogout();
+              }
+            }}
+            sx={{
+              borderColor: '#ef4444',
+              color: '#ef4444',
+              minHeight: 48,
+              '&:hover': {
+                borderColor: '#dc2626',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              },
+            }}
+          >
+            Logout
+          </Button>
         </Box>
       )}
     </Box>

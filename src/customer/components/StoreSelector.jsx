@@ -149,54 +149,57 @@ const StoreSelector = ({ setView }) => {
                 maxWidth: '900px', 
                 margin: '0 auto', 
                 padding: '2rem',
-                minHeight: '100vh'
+                minHeight: '100vh',
+                position: 'relative'
             }}
         >
-            {/* Home Button */}
-            <motion.button
-                onClick={() => setView('welcome')}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                whileHover={{ scale: 1.05, x: -5 }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                    position: 'absolute',
-                    top: '2rem',
-                    left: '2rem',
-                    padding: '0.75rem 1.25rem',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '2px solid rgba(194, 120, 53, 0.5)',
-                    borderRadius: '8px',
-                    color: '#fff',
-                    fontSize: '0.95rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    transition: 'all 0.3s',
-                    backdropFilter: 'blur(10px)'
-                }}
-                onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(194, 120, 53, 0.3)';
-                    e.target.style.borderColor = '#c27835';
-                }}
-                onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.target.style.borderColor = 'rgba(194, 120, 53, 0.5)';
-                }}
-            >
-                <Home size={18} />
-                <span>Home</span>
-            </motion.button>
-
-            {/* Header Section */}
-            <motion.div 
+            {/* Header with Home Button and Store Icon */}
+            <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                style={{ textAlign: 'center', marginBottom: '3rem' }}
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '2rem',
+                    gap: '1rem'
+                }}
             >
+                {/* Home Button - Left Side */}
+                <motion.button
+                    onClick={() => setView('welcome')}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                        padding: '0.75rem 1.25rem',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '2px solid rgba(194, 120, 53, 0.5)',
+                        borderRadius: '8px',
+                        color: '#fff',
+                        fontSize: '0.95rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        transition: 'all 0.3s',
+                        backdropFilter: 'blur(10px)',
+                        flexShrink: 0
+                    }}
+                    onMouseEnter={(e) => {
+                        e.target.style.background = 'rgba(194, 120, 53, 0.3)';
+                        e.target.style.borderColor = '#c27835';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                        e.target.style.borderColor = 'rgba(194, 120, 53, 0.5)';
+                    }}
+                >
+                    <Home size={18} />
+                    <span>Home</span>
+                </motion.button>
+
+                {/* Store Icon - Center */}
                 <motion.div
                     animate={{ 
                         scale: [1, 1.1, 1],
@@ -207,10 +210,26 @@ const StoreSelector = ({ setView }) => {
                         repeat: Infinity,
                         repeatDelay: 3
                     }}
-                    style={{ display: 'inline-block', marginBottom: '1rem' }}
+                    style={{ 
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flex: 1
+                    }}
                 >
                     <Store size={64} style={{ color: '#c27835' }} />
                 </motion.div>
+
+                {/* Spacer for balance */}
+                <div style={{ width: '140px', flexShrink: 0 }} />
+            </motion.div>
+
+            {/* Title Section */}
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                style={{ textAlign: 'center', marginBottom: '3rem' }}
+            >
                 <h1 style={{ 
                     fontSize: '2.5rem', 
                     marginBottom: '0.5rem',
