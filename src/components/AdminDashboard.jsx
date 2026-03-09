@@ -364,23 +364,57 @@ const AdminDashboard = ({
                                     .filter(order => !selectedDate || order.createdAt.startsWith(selectedDate))
                                     .map(order => (
                                         <div key={order.orderId} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '14px 16px', border: `1px solid ${order.status === 'pending' ? 'rgba(194,120,53,0.4)' : order.status === 'accepted' ? 'rgba(34,197,94,0.3)' : order.status === 'Out for Delivery' ? 'rgba(59,130,246,0.3)' : order.status === 'Delivered' ? 'rgba(16,185,129,0.3)' : order.status === 'Cancelled by Customer' ? 'rgba(107, 114, 128, 0.4)' : 'rgba(239,68,68,0.3)'}` }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                                            {/* Order Header */}
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                                                <p className="order-id-highlight" style={{ fontSize: '0.9rem', margin: 0 }}>{order.orderId}</p>
+                                                <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700, background: order.status === 'pending' ? 'rgba(194,120,53,0.2)' : order.status === 'accepted' ? 'rgba(34,197,94,0.2)' : order.status === 'Out for Delivery' ? 'rgba(59,130,246,0.2)' : order.status === 'Delivered' ? 'rgba(16,185,129,0.2)' : order.status === 'Cancelled by Customer' ? 'rgba(107, 114, 128, 0.2)' : 'rgba(239,68,68,0.2)', color: order.status === 'pending' ? '#c27835' : order.status === 'accepted' ? '#16a34a' : order.status === 'Out for Delivery' ? '#3b82f6' : order.status === 'Delivered' ? '#10b981' : order.status === 'Cancelled by Customer' ? '#6b7280' : '#dc2626' }}>
+                                                    {order.status.toUpperCase()}
+                                                </span>
+                                            </div>
+
+                                            {/* Order Details Grid */}
+                                            <div className="order-details-grid" style={{ 
+                                                display: 'grid', 
+                                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                                                gap: '12px',
+                                                marginBottom: '12px'
+                                            }}>
                                                 <div>
-                                                    <p className="order-id-highlight" style={{ fontSize: '0.9rem', marginBottom: '8px' }}>{order.orderId}</p>
-                                                    <p style={{ margin: '2px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>From: {order.customerEmail} | Phone: {order.phone} | Deliver by: {order.deliveryDate}</p>
-                                                    <p style={{ margin: '2px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Address: {order.address}</p>
-                                                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem' }}>{order.items?.map(i => `${i.name} ×${i.qty}`).join(', ')}</p>
-                                                    <p className="price-amount" style={{ margin: '4px 0 0', fontSize: '1.1rem' }}>Total: ₹{order.total}</p>
+                                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>CUSTOMER</p>
+                                                    <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 500 }}>{order.customerEmail}</p>
                                                 </div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                                                    <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700, background: order.status === 'pending' ? 'rgba(194,120,53,0.2)' : order.status === 'accepted' ? 'rgba(34,197,94,0.2)' : order.status === 'Out for Delivery' ? 'rgba(59,130,246,0.2)' : order.status === 'Delivered' ? 'rgba(16,185,129,0.2)' : order.status === 'Cancelled by Customer' ? 'rgba(107, 114, 128, 0.2)' : 'rgba(239,68,68,0.2)', color: order.status === 'pending' ? '#c27835' : order.status === 'accepted' ? '#16a34a' : order.status === 'Out for Delivery' ? '#3b82f6' : order.status === 'Delivered' ? '#10b981' : order.status === 'Cancelled by Customer' ? '#6b7280' : '#dc2626' }}>
-                                                        {order.status.toUpperCase()}
-                                                    </span>
-                                                    
+                                                <div>
+                                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>PHONE</p>
+                                                    <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 500 }}>{order.phone}</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>DELIVERY DATE</p>
+                                                    <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 500 }}>{order.deliveryDate}</p>
+                                                </div>
+                                                <div>
+                                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>TOTAL AMOUNT</p>
+                                                    <p className="price-amount" style={{ margin: '4px 0 0', fontSize: '1.1rem', fontWeight: 700 }}>₹{order.total}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Delivery Address */}
+                                            <div style={{ marginBottom: '12px' }}>
+                                                <p style={{ margin: 0, fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>DELIVERY ADDRESS</p>
+                                                <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>{order.address}</p>
+                                            </div>
+
+                                            {/* Products Ordered */}
+                                            <div style={{ marginBottom: '12px' }}>
+                                                <p style={{ margin: 0, fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>PRODUCTS ORDERED</p>
+                                                <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: 'var(--text-primary)' }}>{order.items?.map(i => `${i.name} ×${i.qty}`).join(', ')}</p>
+                                            </div>
+
+                                            {/* Action Buttons and Signature Section */}
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                                <div style={{ flex: 1 }}>
                                                     {/* Delivery Signature Display */}
                                                     {order.status === 'Delivered' && order.deliverySignature && (
                                                         <div style={{ 
-                                                            marginTop: '8px', 
                                                             padding: '8px', 
                                                             background: 'rgba(16, 185, 129, 0.1)', 
                                                             borderRadius: '8px',
@@ -411,9 +445,11 @@ const AdminDashboard = ({
                                                             </p>
                                                         </div>
                                                     )}
+                                                </div>
 
+                                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                     {order.status === 'pending' && (
-                                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                                        <>
                                                             <button onClick={async () => {
                                                                 try {
                                                                     const success = await updateOrderStatus(order.orderId, 'accepted');
@@ -452,7 +488,7 @@ const AdminDashboard = ({
                                                                     }
                                                                 }
                                                             }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>✗ Cancel</button>
-                                                        </div>
+                                                        </>
                                                     )}
                                                     
                                                     {order.status === 'accepted' && (
