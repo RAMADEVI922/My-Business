@@ -2420,3 +2420,176 @@ html, body {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
   }
 }
+
+/* ========================================
+   PRODUCT GRID RESPONSIVE LAYOUT
+   ======================================== */
+
+/* Mobile - 2 products per row */
+@media (max-width: 767px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+    padding: 0 0.5rem !important;
+  }
+  
+  .product-card {
+    max-width: 100% !important;
+    padding: 0.85rem !important;
+  }
+  
+  .product-img-wrapper {
+    height: 140px !important;
+    margin-bottom: 0.65rem !important;
+  }
+  
+  .product-name {
+    font-size: 0.9rem !important;
+    min-height: 2.2rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .product-price {
+    font-size: 1.25rem !important;
+    margin: 0.4rem 0 !important;
+  }
+  
+  .btn-add-to-cart {
+    padding: 0.65rem 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Tablet - 2 products per row */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+    padding: 0 1rem !important;
+  }
+  
+  .product-img-wrapper {
+    height: 200px !important;
+  }
+  
+  .product-name {
+    font-size: 1.1rem !important;
+  }
+  
+  .product-price {
+    font-size: 1.6rem !important;
+  }
+}
+
+/* Laptop - 3 products per row */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+  
+  .product-img-wrapper {
+    height: 220px !important;
+  }
+}
+
+/* Large Desktop - 4 products per row */
+@media (min-width: 1441px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.75rem !important;
+    max-width: 1600px !important;
+    margin: 0 auto !important;
+  }
+  
+  .product-img-wrapper {
+    height: 240px !important;
+  }
+}
+
+/* Product Card Hover Effects - Desktop Only */
+@media (hover: hover) and (min-width: 1025px) {
+  .product-card:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 12px 24px rgba(194, 120, 53, 0.25) !important;
+  }
+  
+  .product-card:hover .btn-add-to-cart {
+    background: linear-gradient(135deg, #d97706, #ea580c) !important;
+    transform: scale(1.02) !important;
+  }
+}
+
+/* Recommendations Grid Responsive */
+@media (max-width: 767px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .recommendation-card {
+    padding: 1rem !important;
+  }
+  
+  .recommendation-card > div:first-child {
+    height: 140px !important;
+  }
+  
+  .recommendation-card h4 {
+    font-size: 0.95rem !important;
+  }
+  
+  .recommendation-card .price-amount {
+    font-size: 1.15rem !important;
+  }
+  
+  .recommendation-card button {
+    font-size: 0.85rem !important;
+    padding: 0.6rem 1rem !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    max-width: 1600px !important;
+    margin: 0 auto !important;
+  }
+}
+
+/* Ensure consistent card heights */
+.product-card,
+.recommendation-card {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.product-card > div:last-child,
+.recommendation-card > div:last-child {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Image aspect ratio consistency */
+.product-img-wrapper,
+.recommendation-card > div:first-child {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.product-img-wrapper img,
+.recommendation-card img {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}

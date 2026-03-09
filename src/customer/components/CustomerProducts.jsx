@@ -112,42 +112,129 @@ const CustomerProducts = ({
                 )}
             </motion.div>
 
-            <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+            {/* Product Grid - Responsive */}
+            <div 
+                className="products-grid" 
+                style={{ 
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                    gap: '1.5rem',
+                    padding: '0 1rem',
+                    marginBottom: '3rem'
+                }}
+            >
                 {filteredProducts.length > 0 ? (
-                    filteredProducts.map(product => (
-                        <div key={product.id} className="product-item glass-container" style={{ flexDirection: 'column', gap: '1rem', padding: '1.5rem' }}>
-                            <div className="product-img-wrapper" style={{ width: '100%', height: '200px' }}>
+                    filteredProducts.map((product, index) => (
+                        <motion.div 
+                            key={product.id} 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            whileHover={{ y: -8, boxShadow: '0 12px 24px rgba(194, 120, 53, 0.2)' }}
+                            className="product-card glass-container" 
+                            style={{ 
+                                display: 'flex',
+                                flexDirection: 'column',
+                                padding: '1.25rem',
+                                borderRadius: '16px',
+                                overflow: 'hidden',
+                                transition: 'all 0.3s ease',
+                                height: '100%'
+                            }}
+                        >
+                            {/* Product Image */}
+                            <div 
+                                className="product-img-wrapper" 
+                                style={{ 
+                                    width: '100%', 
+                                    height: '220px',
+                                    borderRadius: '12px',
+                                    overflow: 'hidden',
+                                    background: 'rgba(194, 120, 53, 0.05)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginBottom: '1rem'
+                                }}
+                            >
                                 {product.photo ? (
                                     <img
                                         src={product.photo}
                                         alt={product.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                        style={{ 
+                                            width: '100%', 
+                                            height: '100%', 
+                                            objectFit: 'cover'
+                                        }}
+                                        onError={(e) => { 
+                                            e.currentTarget.style.display = 'none';
+                                            e.currentTarget.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c27835" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>';
+                                        }}
                                     />
                                 ) : (
-                                    <ImageIcon size={48} className="text-secondary" />
+                                    <ImageIcon size={48} style={{ color: '#c27835', opacity: 0.3 }} />
                                 )}
                             </div>
-                            <div style={{ width: '100%' }}>
-                                <h3 className="product-name" style={{ color: 'var(--text-primary)', fontSize: '1.25rem' }}>{product.name}</h3>
-                                <p className="product-price price-amount" style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>₹{product.price}</p>
+                            
+                            {/* Product Info */}
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                <h3 
+                                    className="product-name" 
+                                    style={{ 
+                                        color: 'var(--text-primary)', 
+                                        fontSize: '1.15rem',
+                                        fontWeight: 700,
+                                        margin: 0,
+                                        lineHeight: 1.3,
+                                        minHeight: '2.6rem',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
+                                    }}
+                                >
+                                    {product.name}
+                                </h3>
+                                
+                                <p 
+                                    className="product-price price-amount" 
+                                    style={{ 
+                                        fontSize: '1.75rem', 
+                                        fontWeight: 800,
+                                        margin: 0,
+                                        color: '#c27835'
+                                    }}
+                                >
+                                    ₹{product.price}
+                                </p>
+                                
                                 <button
-                                    className="btn-primary btn-add-to-cart w-full"
+                                    className="btn-primary btn-add-to-cart"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.85rem 1.25rem',
+                                        fontSize: '0.95rem',
+                                        fontWeight: 700,
+                                        marginTop: 'auto'
+                                    }}
                                     onClick={() => {
                                         addToCart(product);
                                         addToRecentlyViewed(product);
                                     }}
                                 >
-                                    {cart.find(i => i.id === product.id) ? `In Cart (${cart.find(i => i.id === product.id).qty})` : 'Add to Cart'}
+                                    {cart.find(i => i.id === product.id) 
+                                        ? `In Cart (${cart.find(i => i.id === product.id).qty})` 
+                                        : 'Add to Cart'}
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     ))
                 ) : (
                     <div style={{
                         gridColumn: '1 / -1',
                         textAlign: 'center',
-                        padding: '3rem',
+                        padding: '4rem 2rem',
                         color: 'var(--text-secondary)'
                     }}>
                         <Search size={64} style={{ opacity: 0.3, marginBottom: '1rem' }} />
