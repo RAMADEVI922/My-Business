@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, FileText, Image, AlertCircle } from 'lucide-react';
+import { Upload, FileText, Image } from 'lucide-react';
 import { useUser } from '@clerk/react';
 
 /**
@@ -132,33 +132,11 @@ const ShopOwnerDocuments = ({ setView }) => {
                 fontSize: '2rem', 
                 fontWeight: 700, 
                 color: '#c27835',
-                marginBottom: '1rem',
+                marginBottom: '2rem',
                 textAlign: 'center'
             }}>
                 Shop Owner Documents
             </h2>
-
-            {/* Information Message */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.75rem',
-                padding: '1rem',
-                background: 'rgba(194, 120, 53, 0.1)',
-                border: '2px solid rgba(194, 120, 53, 0.3)',
-                borderRadius: '12px',
-                marginBottom: '2rem'
-            }}>
-                <AlertCircle size={24} style={{ color: '#c27835', flexShrink: 0, marginTop: '2px' }} />
-                <p style={{ 
-                    margin: 0, 
-                    color: '#2d1e12',
-                    fontSize: '0.95rem',
-                    lineHeight: '1.5'
-                }}>
-                    Please upload the required documents. The document requirements have already been shared with you via screenshot.
-                </p>
-            </div>
 
             {uploadError && (
                 <div style={{
@@ -275,10 +253,10 @@ const ShopOwnerDocuments = ({ setView }) => {
                         fontSize: '1rem',
                         cursor: 'pointer',
                         fontWeight: 600,
-                        color: identityProofType ? '#2d1e12' : '#666'
+                        color: identityProofType ? '#2d1e12' : '#000000'
                     }}
                 >
-                    <option value="" style={{ color: '#999', fontWeight: 500 }}>-- Select Document Type --</option>
+                    <option value="" style={{ color: '#000000', fontWeight: 600 }}>-- Select Document Type --</option>
                     <option value="shop-license" style={{ color: '#2d1e12', fontWeight: 700 }}>🏪 Shop License</option>
                     <option value="pan-card" style={{ color: '#2d1e12', fontWeight: 700 }}>💳 PAN Card</option>
                     <option value="aadhaar-card" style={{ color: '#2d1e12', fontWeight: 700 }}>🆔 Aadhaar Card</option>

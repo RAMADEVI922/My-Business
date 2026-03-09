@@ -89,7 +89,7 @@ export const useAppState = () => {
             return;
         }
         
-        const noRedirectPages = ['welcome', 'landing'];
+        const noRedirectPages = ['welcome', 'landing', 'shop-owner-documents'];
         if (noRedirectPages.includes(view)) return;
         
         if (view === 'login' && !isSignedIn) return;
@@ -107,6 +107,21 @@ export const useAppState = () => {
             }
             sessionStorage.setItem('is_admin', 'true');
         } else {
+            // Check if shop owner needs to upload documents first
+            const customerType = sessionStorage.getItem('customer_type');
+            const documentsUploaded = user.unsafeMetadata?.documentsUploaded;
+            
+            if (customerType === 'shop-owner' && !documentsUploaded) {
+                // Shop owner hasn't uploaded documents yet
+                if (view !== 'shop-owner-documents') {
+                    console.log('Shop owner needs to upload documents - redirecting to documents page');
+                    setView('shop-owner-documents');
+                }
+                sessionStorage.removeItem('is_admin');
+                return;
+            }
+            
+            // Regular flow for customers or shop owners with documents
             const hasSelectedStore = sessionStorage.getItem('store_admin_id');
             if (hasSelectedStore) {
                 if (view !== 'customer-products') {

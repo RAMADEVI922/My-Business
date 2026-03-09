@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Store, ChevronDown, ShoppingBag, Sparkles, Search, Home } from 'lucide-react';
+import { useUser } from '@clerk/react';
 
 /**
  * Store Selector Component
@@ -11,6 +12,7 @@ import { Store, ChevronDown, ShoppingBag, Sparkles, Search, Home } from 'lucide-
  * Includes product search to find which admin sells a specific product
  */
 const StoreSelector = ({ setView }) => {
+    const { user } = useUser();
     const [admins, setAdmins] = useState([]);
     const [selectedAdmin, setSelectedAdmin] = useState('');
     const [selectedAdminData, setSelectedAdminData] = useState(null);
@@ -20,6 +22,20 @@ const StoreSelector = ({ setView }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [highlightedAdmin, setHighlightedAdmin] = useState(null);
+
+    // Guard: Check if shop owner has uploaded documents
+    useEffect(() => {
+        if (user) {
+            const customerType = sessionStorage.getItem('customer_type');
+            const documentsUploaded = user.unsafeMetadata?.documentsUploaded;
+            
+            if (customerType === 'shop-owner' && !documentsUploaded) {
+                console.log('Shop owner must upload documents first - redirecting');
+                setView('shop-owner-documents');
+                return;
+            }
+        }
+    }, [user, setView]);
 
     useEffect(() => {
         fetchAdmins();
