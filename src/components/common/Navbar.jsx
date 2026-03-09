@@ -48,7 +48,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
   ];
 
   const drawer = (
-    <Box sx={{ width: 280, pt: 2 }}>
+    <Box sx={{ width: 280, pt: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, mb: 2 }}>
         <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 700 }}>
           MyBusiness
@@ -58,7 +58,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
         </IconButton>
       </Box>
       
-      <List>
+      <List sx={{ flex: 1 }}>
         {menuItems.map((item) => (
           <ListItem key={item.text} disablePadding>
             <ListItemButton
@@ -69,12 +69,13 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
               sx={{
                 mx: 1,
                 borderRadius: 2,
+                minHeight: 48,
                 '&:hover': {
                   backgroundColor: 'rgba(194, 120, 53, 0.1)',
                 },
               }}
             >
-              <ListItemIcon sx={{ color: 'primary.main' }}>
+              <ListItemIcon sx={{ color: 'primary.main', minWidth: 40 }}>
                 {item.icon}
               </ListItemIcon>
               <ListItemText primary={item.text} />
@@ -92,12 +93,13 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
               sx={{
                 mx: 1,
                 borderRadius: 2,
+                minHeight: 48,
                 '&:hover': {
                   backgroundColor: 'rgba(194, 120, 53, 0.1)',
                 },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 40 }}>
                 <Badge badgeContent={cartCount} color="primary">
                   <ShoppingCart sx={{ color: 'primary.main' }} />
                 </Badge>
@@ -109,7 +111,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
       </List>
 
       {isSignedIn && user && (
-        <Box sx={{ px: 2, mt: 'auto', pb: 2 }}>
+        <Box sx={{ px: 2, pb: 2, mt: 'auto' }}>
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -122,7 +124,17 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
               afterSignOutUrl="/"
               appearance={{
                 elements: {
+                  userButtonAvatarBox: {
+                    width: 40,
+                    height: 40,
+                  },
+                  userButtonPopoverCard: {
+                    zIndex: 10000,
+                  },
                   userButtonPopoverActionButton__signOut: {
+                    minHeight: '48px',
+                    padding: '1rem',
+                    fontSize: '1rem',
                     '&:hover': {
                       backgroundColor: '#fee2e2'
                     }
@@ -266,7 +278,16 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
                       afterSignOutUrl="/"
                       appearance={{
                         elements: {
+                          userButtonAvatarBox: {
+                            width: 40,
+                            height: 40,
+                          },
+                          userButtonPopoverCard: {
+                            zIndex: 10000,
+                          },
                           userButtonPopoverActionButton__signOut: {
+                            minHeight: '48px',
+                            padding: '1rem',
                             '&:hover': {
                               backgroundColor: '#fee2e2'
                             }
@@ -294,6 +315,7 @@ export default function Navbar({ currentUser, cartCount, onNavigate }) {
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: 280,
+            maxWidth: '85vw',
           },
         }}
       >
