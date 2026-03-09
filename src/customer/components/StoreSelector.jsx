@@ -511,47 +511,62 @@ const StoreSelector = ({ setView }) => {
                 </div>
             </motion.div>
 
-            {/* Store Information Card */}
+            {/* Store Information Card - Compact */}
             {selectedAdminData && (
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
                     style={{
-                        padding: '2rem',
+                        padding: '1rem',
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9))',
-                        borderRadius: '16px',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                        marginBottom: '2rem',
-                        border: '2px solid rgba(194, 120, 53, 0.2)'
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                        marginBottom: '1.5rem',
+                        border: '1.5px solid rgba(194, 120, 53, 0.2)'
                     }}
                 >
-                    <h3 style={{ 
-                        marginBottom: '1.5rem', 
-                        color: '#c27835',
-                        fontSize: '1.5rem',
-                        fontWeight: 700,
+                    <div style={{ 
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.5rem'
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '0.75rem',
+                        marginBottom: products.length > 0 ? '1rem' : '0'
                     }}>
-                        <Store size={24} />
-                        Store Information
-                    </h3>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <p style={{ 
-                            fontSize: '1.1rem',
-                            marginBottom: '0.5rem',
-                            color: '#555'
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Store size={18} color="#c27835" />
+                            <h3 style={{ 
+                                margin: 0,
+                                color: '#c27835',
+                                fontSize: '0.95rem',
+                                fontWeight: 700
+                            }}>
+                                Store Information
+                            </h3>
+                        </div>
+                        <div style={{ 
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.25rem',
+                            textAlign: 'right'
                         }}>
-                            <strong style={{ color: '#333' }}>Store Name:</strong> {selectedAdminData.storeName || 'N/A'}
-                        </p>
-                        <p style={{ 
-                            fontSize: '1.1rem',
-                            color: '#555'
-                        }}>
-                            <strong style={{ color: '#333' }}>Email:</strong> {selectedAdminData.email}
-                        </p>
+                            <p style={{ 
+                                fontSize: '0.85rem',
+                                margin: 0,
+                                color: '#333',
+                                fontWeight: 600
+                            }}>
+                                {selectedAdminData.storeName || 'N/A'}
+                            </p>
+                            <p style={{ 
+                                fontSize: '0.75rem',
+                                margin: 0,
+                                color: '#666'
+                            }}>
+                                {selectedAdminData.email}
+                            </p>
+                        </div>
                     </div>
                     
                     {products.length > 0 && (
@@ -559,35 +574,26 @@ const StoreSelector = ({ setView }) => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            style={{ marginTop: '2rem' }}
                         >
-                            <h4 style={{ 
-                                marginBottom: '1.5rem',
-                                fontSize: '1.2rem',
-                                fontWeight: 700,
-                                color: '#333'
-                            }}>
-                                Product Preview
-                            </h4>
                             <div style={{ 
                                 display: 'grid', 
-                                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', 
-                                gap: '1.5rem' 
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', 
+                                gap: '0.75rem' 
                             }}>
                                 {products.map((product, index) => (
                                     <motion.div 
                                         key={product.id}
-                                        initial={{ opacity: 0, y: 20 }}
+                                        initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.1 * index }}
                                         whileHover={{ 
-                                            scale: 1.05,
-                                            boxShadow: '0 8px 16px rgba(194, 120, 53, 0.2)'
+                                            scale: 1.03,
+                                            boxShadow: '0 4px 8px rgba(194, 120, 53, 0.2)'
                                         }}
                                         style={{
-                                            padding: '1rem',
-                                            border: '2px solid #f0f0f0',
-                                            borderRadius: '12px',
+                                            padding: '0.5rem',
+                                            border: '1.5px solid #f0f0f0',
+                                            borderRadius: '8px',
                                             textAlign: 'center',
                                             background: 'white',
                                             transition: 'all 0.3s',
@@ -600,25 +606,29 @@ const StoreSelector = ({ setView }) => {
                                                 alt={product.name}
                                                 style={{ 
                                                     width: '100%', 
-                                                    height: '120px', 
+                                                    height: '70px', 
                                                     objectFit: 'cover',
-                                                    borderRadius: '8px',
-                                                    marginBottom: '0.75rem'
+                                                    borderRadius: '6px',
+                                                    marginBottom: '0.4rem'
                                                 }}
                                             />
                                         )}
                                         <p style={{ 
-                                            fontSize: '1rem', 
-                                            fontWeight: 700,
+                                            fontSize: '0.8rem', 
+                                            fontWeight: 600,
                                             color: '#333',
-                                            marginBottom: '0.5rem'
+                                            marginBottom: '0.25rem',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
                                         }}>
                                             {product.name}
                                         </p>
                                         <p style={{ 
                                             color: '#c27835', 
-                                            fontSize: '1.1rem',
-                                            fontWeight: 700
+                                            fontSize: '0.85rem',
+                                            fontWeight: 700,
+                                            margin: 0
                                         }}>
                                             ₹{product.price}
                                         </p>

@@ -2378,3 +2378,45 @@ html, body {
     gap: 0.75rem !important;
   }
 }
+
+/* ========================================
+   STORE INFORMATION COMPACT LAYOUT
+   ======================================== */
+
+/* Mobile - Extra compact */
+@media (max-width: 767px) {
+  /* Store info card */
+  .store-info-card {
+    padding: 0.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Product preview grid - 2 columns on mobile */
+  .store-info-card > div > div[style*="grid"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Product cards - smaller on mobile */
+  .store-info-card img {
+    height: 60px !important;
+  }
+  
+  .store-info-card p {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Tablet - 3 columns */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .store-info-card > div > div[style*="grid"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* Desktop - 4+ columns */
+@media (min-width: 1025px) {
+  .store-info-card > div > div[style*="grid"] {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)) !important;
+  }
+}
