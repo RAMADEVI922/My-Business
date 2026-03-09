@@ -13,8 +13,19 @@ export const useAppState = () => {
     
     // Initialize view state
     const [view, setView] = useState(() => {
+        // Check if page was refreshed
+        const pageRefreshed = sessionStorage.getItem('page_refreshed');
+        const lastView = sessionStorage.getItem('last_view');
+        
+        if (pageRefreshed === 'true' && lastView) {
+            // Restore the last view after refresh
+            sessionStorage.removeItem('page_refreshed');
+            console.log('Page refreshed - restoring view:', lastView);
+            return lastView;
+        }
+        
         const savedView = sessionStorage.getItem('app_view') || 'welcome';
-        const customerOnlyViews = ['customer-products', 'cart', 'order-address', 'my-orders', 'order-confirmed', 'contact'];
+        const customerOnlyViews = ['customer-products', 'cart', 'order-address', 'my-orders', 'order-confirmed', 'contact', 'shop-owner-documents'];
         if (clerkMode === 'admin' && customerOnlyViews.includes(savedView)) {
             return 'login';
         }
@@ -46,13 +57,19 @@ export const useAppState = () => {
             // User has signed out, clean up app state
             const wasSignedIn = sessionStorage.getItem('was_signed_in');
             if (wasSignedIn === 'true') {
-                console.log('User signed out, cleaning up app state');
+                console.log('User signed out, cleaning up app state and redirecting to home');
                 sessionStorage.removeItem('app_user');
                 sessionStorage.removeItem('app_cart');
+                sessionStorage.removeItem('app_order_details');
                 sessionStorage.removeItem('is_admin');
                 sessionStorage.removeItem('customer_type');
                 sessionStorage.removeItem('store_admin_id');
                 sessionStorage.removeItem('was_signed_in');
+                sessionStorage.removeItem('page_refreshed');
+                sessionStorage.removeItem('last_view');
+                sessionStorage.removeItem('app_view');
+                
+                // Redirect to landing page
                 setView('landing');
             }
         } else if (isSignedIn) {
@@ -64,6 +81,13 @@ export const useAppState = () => {
     // Role-based access and auto-redirect
     useEffect(() => {
         if (!isLoaded) return;
+        
+        // Check if page was just refreshed - if so, don't auto-redirect
+        const pageRefreshed = sessionStorage.getItem('page_refreshed');
+        if (pageRefreshed === 'true') {
+            console.log('Page refreshed - skipping auto-redirect');
+            return;
+        }
         
         const noRedirectPages = ['welcome', 'landing'];
         if (noRedirectPages.includes(view)) return;

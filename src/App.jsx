@@ -108,40 +108,24 @@ function App() {
         }
     }, [isSignedIn, user, setCurrentUser, adminId, setCart]);
 
-    // Auto-logout when page is closed or user leaves
+    // Save state before page unload (for refresh persistence)
     useEffect(() => {
         if (!isSignedIn) return;
 
-        const handleBeforeUnload = (e) => {
-            // Log out the user
-            console.log('Page closing - logging out user');
-            clerkSignOut();
-            
-            // Clear all session data
-            sessionStorage.clear();
-            localStorage.clear();
+        const handleBeforeUnload = () => {
+            // Save current state for page refresh
+            sessionStorage.setItem('page_refreshed', 'true');
+            sessionStorage.setItem('last_view', view);
         };
 
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'hidden') {
-                // Page is being hidden (tab closed, switched, or minimized)
-                console.log('Page hidden - logging out user');
-                clerkSignOut();
-                sessionStorage.clear();
-                localStorage.clear();
-            }
-        };
-
-        // Add event listeners
+        // Add event listener
         window.addEventListener('beforeunload', handleBeforeUnload);
-        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         // Cleanup
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [isSignedIn, clerkSignOut]);
+    }, [isSignedIn, view]);
     
     // Products management
     const { 
@@ -174,11 +158,11 @@ function App() {
     const wrappedCustomerRegister = (e, formData, files, type) => registerCustomer(e, formData, files, type, setMyOrders);
 
     // Views that should hide the navbar
-    const noNavbarViews = ['welcome', 'dashboard', 'login', 'admin', 'register', 'customer-login', 'forgot-password', 'store-selector'];
+    const noNavbarViews = ['welcome', 'dashboard', 'login', 'admin', 'register', 'customer-login', 'forgot-password', 'store-selector', 'shop-owner-documents'];
     const showNavbar = !noNavbarViews.includes(view) && !location.pathname.startsWith('/admin');
 
     // Views that should have no padding
-    const noPaddingViews = ['welcome', 'dashboard', 'login', 'admin', 'register', 'customer-login', 'forgot-password', 'contact', 'store-selector'];
+    const noPaddingViews = ['welcome', 'dashboard', 'login', 'admin', 'register', 'customer-login', 'forgot-password', 'contact', 'store-selector', 'shop-owner-documents'];
     const mainPadding = noPaddingViews.includes(view) ? '0' : '2rem';
     const mainMaxWidth = noPaddingViews.includes(view) ? '100%' : '1200px';
 

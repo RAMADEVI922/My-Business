@@ -1,14 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { saveOrder, updateOrderStatus, getOrdersByEmail, sendOrderNotification } from '../aws-config';
 
 export const useOrders = (currentUser, cart, cartTotal, setView, adminId) => {
     const [orders, setOrders] = useState([]);
     const [myOrders, setMyOrders] = useState([]);
     const [lastOrderId, setLastOrderId] = useState(null);
-    const [orderDetails, setOrderDetails] = useState({ 
-        address: '', pincode: '', countryCode: '+91', phone: '', deliveryDate: '', paymentCategory: '', paymentMethod: '' 
+    const [orderDetails, setOrderDetails] = useState(() => {
+        // Try to restore order details from sessionStorage on page refresh
+        try {
+            const saved = sessionStorage.getItem('app_order_details');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error('Error restoring order details:', error);
+        }
+        return { 
+            address: '', pincode: '', countryCode: '+91', phone: '', deliveryDate: '', paymentCategory: '', paymentMethod: '' 
+        };
     });
     const [orderError, setOrderError] = useState('');
+
+    // Persist order details to sessionStorage whenever they change
+    useEffect(() => {
+        if (orderDetails && Object.keys(orderDetails).length > 0) {
+            sessionStorage.setItem('app_order_details', JSON.stringify(orderDetails));
+        }
+    }, [orderDetails]);
 
     const handleConfirmOrder = async (e) => {
         e.preventDefault();

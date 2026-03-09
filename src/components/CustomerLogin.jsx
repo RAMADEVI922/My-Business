@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { SignIn } from '@clerk/react';
+import { SignIn, useUser } from '@clerk/react';
 
 /**
  * Customer Login Component
@@ -10,6 +10,24 @@ import { SignIn } from '@clerk/react';
  * Customer credentials are stored in the customer Clerk account, separate from admin credentials
  */
 const CustomerLogin = ({ setView }) => {
+    const { isSignedIn, user } = useUser();
+
+    // Check if shop owner needs to upload documents after login
+    useEffect(() => {
+        if (isSignedIn && user) {
+            const customerType = sessionStorage.getItem('customer_type');
+            const documentsUploaded = user.unsafeMetadata?.documentsUploaded;
+            
+            if (customerType === 'shop-owner' && !documentsUploaded) {
+                console.log('Shop owner logged in without documents - redirecting to documents page');
+                setView('shop-owner-documents');
+            } else {
+                // Go to store selector
+                setView('store-selector');
+            }
+        }
+    }, [isSignedIn, user, setView]);
+
     return (
         <motion.div
             key="login"

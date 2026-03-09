@@ -53,6 +53,41 @@
   opacity: 1 !important;
 }
 
+/* Ensure user-entered text is always dark and visible */
+.input-field,
+.customer-input,
+textarea.input-field,
+input[type="text"].input-field,
+input[type="tel"].input-field,
+input[type="date"].input-field {
+  color: #000000 !important;
+}
+
+/* Date input specific styling for better visibility */
+input[type="date"].input-field::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+input[type="date"].input-field::-webkit-datetime-edit {
+  color: #000000;
+}
+
+input[type="date"].input-field::-webkit-datetime-edit-fields-wrapper {
+  color: #000000;
+}
+
+input[type="date"].input-field::-webkit-datetime-edit-text {
+  color: #000000;
+}
+
+input[type="date"].input-field::-webkit-datetime-edit-month-field,
+input[type="date"].input-field::-webkit-datetime-edit-day-field,
+input[type="date"].input-field::-webkit-datetime-edit-year-field {
+  color: #000000;
+  font-weight: 500;
+}
+
 /* Select dropdown styling */
 select.input-field {
   -webkit-appearance: none;
@@ -2398,3 +2433,48 @@ img {
 }
 
 /* Mobile fixes are loaded separately via mobile-fixes.css */
+
+
+/* Clerk OTP Input Fix - Ensure numbers are visible */
+.cl-otpCodeFieldInput,
+.cl-formFieldInput[type="text"],
+.cl-input {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+  -webkit-text-security: none !important;
+  text-security: none !important;
+  font-feature-settings: normal !important;
+  font-variant: normal !important;
+  letter-spacing: normal !important;
+}
+
+/* Clerk OTP Code Box Styling */
+.cl-otpCodeFieldInput {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 2px solid rgba(194, 120, 53, 0.3) !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  caret-color: #c27835 !important;
+}
+
+.cl-otpCodeFieldInput:focus {
+  border-color: #c27835 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(194, 120, 53, 0.2) !important;
+}
+
+/* Ensure Clerk inputs show actual text, not symbols */
+.cl-formFieldInput {
+  -webkit-text-security: none !important;
+  text-security: none !important;
+}
+
+/* Fix for password-like masking on OTP fields */
+input[inputmode="numeric"],
+input[type="text"][autocomplete*="one-time-code"] {
+  -webkit-text-security: none !important;
+  text-security: none !important;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+}

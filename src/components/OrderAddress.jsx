@@ -41,7 +41,7 @@ const OrderAddress = ({
                         rows={3}
                         placeholder="Enter your full delivery address…"
                         className="input-field black-placeholder"
-                        style={{ resize: 'vertical', fontFamily: 'inherit', color: '#2d1e12', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px' }}
+                        style={{ resize: 'vertical', fontFamily: 'inherit', color: '#000000', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px', fontSize: '0.95rem', fontWeight: 500 }}
                         value={orderDetails.address}
                         onChange={(e) => setOrderDetails(prev => ({ ...prev, address: e.target.value }))}
                         required
@@ -54,7 +54,7 @@ const OrderAddress = ({
                         type="text"
                         placeholder="Enter your 6-digit pincode"
                         className="input-field black-placeholder"
-                        style={{ color: '#2d1e12', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px' }}
+                        style={{ color: '#000000', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px', fontSize: '0.95rem', fontWeight: 500 }}
                         value={orderDetails.pincode}
                         onChange={(e) => setOrderDetails(prev => ({ ...prev, pincode: e.target.value }))}
                         pattern="[0-9]{6}"
@@ -98,7 +98,7 @@ const OrderAddress = ({
                             type="tel"
                             placeholder="Mobile Number"
                             className="input-field light-input black-placeholder"
-                            style={{ color: '#2d1e12', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px', flexGrow: 1 }}
+                            style={{ color: '#000000', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px', flexGrow: 1, fontSize: '0.95rem', fontWeight: 500 }}
                             value={orderDetails.phone}
                             onChange={(e) => setOrderDetails(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '') }))}
                             pattern="[0-9]{10}"
@@ -113,7 +113,7 @@ const OrderAddress = ({
                     <input
                         type="date"
                         className="input-field light-input"
-                        style={{ color: '#2d1e12', colorScheme: 'light', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px' }}
+                        style={{ color: '#000000', colorScheme: 'light', background: '#f5f5f5', border: '1px solid #ddd', padding: '12px 16px', fontSize: '0.95rem', fontWeight: 500 }}
                         min={new Date().toISOString().split('T')[0]}
                         value={orderDetails.deliveryDate}
                         onChange={(e) => setOrderDetails(prev => ({ ...prev, deliveryDate: e.target.value }))}

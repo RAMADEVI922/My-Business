@@ -4,6 +4,7 @@ import WelcomeScreen from './WelcomeScreen';
 import LandingPage from './LandingPage';
 import CustomerRegister from './CustomerRegister';
 import CustomerLogin from './CustomerLogin';
+import ShopOwnerDocuments from './ShopOwnerDocuments';
 import CustomerProducts from './CustomerProducts';
 import CartView from './CartView';
 import OrderAddress from './OrderAddress';
@@ -88,6 +89,10 @@ const AppRoutes = ({
                     setView={setView}
                     setForgotFrom={setForgotFrom}
                 />
+            )}
+            
+            {view === 'shop-owner-documents' && (
+                <ShopOwnerDocuments setView={setView} />
             )}
             
             {view === 'store-selector' && (

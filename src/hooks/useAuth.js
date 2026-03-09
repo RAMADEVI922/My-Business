@@ -111,9 +111,15 @@ export const useAuth = (setView) => {
         if (setCart) setCart([]);
         sessionStorage.removeItem('app_user');
         sessionStorage.removeItem('app_cart');
+        sessionStorage.removeItem('app_order_details');
         sessionStorage.removeItem('is_admin');
         sessionStorage.removeItem('clerk_mode');
         sessionStorage.removeItem('customer_type');
+        sessionStorage.removeItem('store_admin_id');
+        sessionStorage.removeItem('page_refreshed');
+        sessionStorage.removeItem('last_view');
+        sessionStorage.removeItem('app_view');
+        sessionStorage.removeItem('was_signed_in');
         setView('landing');
         navigate('/');
     };
