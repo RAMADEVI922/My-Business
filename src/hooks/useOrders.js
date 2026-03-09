@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { saveOrder, updateOrderStatus, getOrdersByEmail, sendOrderNotification } from '../aws-config';
+import { saveOrder, updateOrderStatus, getOrdersByEmail, sendOrderNotification } from '../services/aws-config';
 
 export const useOrders = (currentUser, cart, cartTotal, setView, adminId) => {
     const [orders, setOrders] = useState([]);

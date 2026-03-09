@@ -695,7 +695,6 @@ select.input-field:focus {
   border-radius: 25px !important;
   position: relative;
   overflow: hidden;
-  animation: login-pulse 2.5s infinite;
   box-shadow: 0 4px 15px rgba(194, 120, 53, 0.3);
 }
 
@@ -891,7 +890,7 @@ select.input-field:focus {
   font-weight: 700;
 }
 
-/* Admin Access Button with Animations */
+/* Admin Access Button - No Animation */
 .admin-access-btn {
   background: rgba(194, 120, 53, 0.1) !important;
   border: 2px solid rgba(194, 120, 53, 0.4) !important;
@@ -903,7 +902,6 @@ select.input-field:focus {
   letter-spacing: 1.5px;
   font-size: 0.85rem !important;
   margin-top: 2rem !important;
-  animation: pulse-glow 2s infinite;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -1035,7 +1033,6 @@ select.input-field:focus {
   color: var(--accent-color);
   margin-bottom: 2rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -1061,7 +1058,6 @@ select.input-field:focus {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shine 4s linear infinite;
 }
 
 @keyframes shine {

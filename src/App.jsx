@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import AppRoutes from './components/AppRoutes';
+import Navbar from './components/common/Navbar';
+import AppRoutes from './components/common/AppRoutes';
 
 // Hooks
 import { useAppState } from './hooks/useAppState';
@@ -95,7 +95,7 @@ function App() {
             // If admin, update their profile with Clerk user ID
             if (adminId && userData.email) {
                 const updateAdminWithClerkId = async () => {
-                    const { updateAdminProfile } = await import('./aws-config');
+                    const { updateAdminProfile } = await import('./services/aws-config');
                     const storeName = `${user.firstName} ${user.lastName}`.trim() || user.username;
                     await updateAdminProfile(userData.email, user.id, storeName);
                 };

@@ -82,7 +82,7 @@ const ShopOwnerDocuments = ({ setView }) => {
 
         try {
             // Upload to S3
-            const { uploadToS3 } = await import('../aws-config');
+            const { uploadToS3 } = await import('../../services/aws-config');
             
             const shopImageUrl = await uploadToS3(shopImage, 'shop-images');
             const identityProofUrl = await uploadToS3(identityProof, 'identity-proofs');

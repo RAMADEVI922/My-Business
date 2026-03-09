@@ -22,7 +22,7 @@ const ForgotPassword = ({
         setError('');
         setResetLoading(true);
         try {
-            const { getAdminByEmail, saveOTP, sendPasswordResetEmail } = await import('../aws-config.js');
+            const { getAdminByEmail, saveOTP, sendPasswordResetEmail } = await import('../../services/aws-config.js');
             const admin = await getAdminByEmail(resetEmail);
             if (!admin) {
                 setError('Email not found. Please enter your registered admin email.');
@@ -61,7 +61,7 @@ const ForgotPassword = ({
         }
         setResetLoading(true);
         try {
-            const { verifyOTP, getAdminByEmail, updateAdminPassword } = await import('../aws-config.js');
+            const { verifyOTP, getAdminByEmail, updateAdminPassword } = await import('../../services/aws-config.js');
             const verification = await verifyOTP(resetEmail, resetOTP);
             if (!verification.success) {
                 setError(verification.message || 'Invalid or expired OTP.');

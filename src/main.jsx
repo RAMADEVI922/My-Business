@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ClerkProvider } from '@clerk/react'
 import App from './App.jsx'
-import './index.css'
-import './mobile-fixes.css'
+import './styles/index.css'
+import './styles/mobile-fixes.css'
 
 const CLERK_MODE = sessionStorage.getItem('clerk_mode') || 'customer';
 const PUBLISHABLE_KEY = CLERK_MODE === 'admin' 

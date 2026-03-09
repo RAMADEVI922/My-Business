@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProducts } from '../aws-config';
+import { getProducts } from '../services/aws-config';
 
 export const useProducts = (view, locationPathname, cart, adminId) => {
     const [products, setProducts] = useState([]);

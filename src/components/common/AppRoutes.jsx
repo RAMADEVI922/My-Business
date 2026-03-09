@@ -2,20 +2,20 @@ import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import WelcomeScreen from './WelcomeScreen';
 import LandingPage from './LandingPage';
-import CustomerRegister from './CustomerRegister';
-import CustomerLogin from './CustomerLogin';
-import ShopOwnerDocuments from './ShopOwnerDocuments';
-import CustomerProducts from './CustomerProducts';
-import CartView from './CartView';
-import OrderAddress from './OrderAddress';
-import MyOrders from './MyOrders';
-import OrderConfirmed from './OrderConfirmed';
+import CustomerRegister from '../../auth/components/CustomerRegister';
+import CustomerLogin from '../../auth/components/CustomerLogin';
+import ShopOwnerDocuments from '../../auth/components/ShopOwnerDocuments';
+import CustomerProducts from '../../customer/components/CustomerProducts';
+import CartView from '../../customer/components/CartView';
+import OrderAddress from '../../customer/components/OrderAddress';
+import MyOrders from '../../customer/components/MyOrders';
+import OrderConfirmed from '../../customer/components/OrderConfirmed';
 import ContactUs from './ContactUs';
-import AdminLogin from './AdminLogin';
-import ForgotPassword from './ForgotPassword';
-import AdminDashboard from './AdminDashboard';
-import StoreSelector from './StoreSelector';
-import { handleSelectCustomerType, handleNavigateToAdmin } from '../utils/navigationHandlers';
+import AdminLogin from '../../auth/components/AdminLogin';
+import ForgotPassword from '../../auth/components/ForgotPassword';
+import AdminDashboard from '../../admin/components/AdminDashboard';
+import StoreSelector from '../../customer/components/StoreSelector';
+import { handleSelectCustomerType, handleNavigateToAdmin } from '../../utils/navigationHandlers';
 
 /**
  * AppRoutes Component
@@ -146,15 +146,15 @@ const AppRoutes = ({
                     handleCancelOrder={handleCancelOrder}
                     setView={setView}
                     getOrdersByEmail={async (email) => {
-                        const { getOrdersByEmail } = await import('../aws-config');
+                        const { getOrdersByEmail } = await import('../../services/aws-config');
                         return await getOrdersByEmail(email, customerAdminId);
                     }}
                     acceptProposedDate={async (id) => {
-                        const { acceptProposedDate } = await import('../aws-config');
+                        const { acceptProposedDate } = await import('../../services/aws-config');
                         return await acceptProposedDate(id);
                     }}
                     rejectProposedDate={async (id) => {
-                        const { rejectProposedDate } = await import('../aws-config');
+                        const { rejectProposedDate } = await import('../../services/aws-config');
                         return await rejectProposedDate(id);
                     }}
                 />
@@ -197,15 +197,15 @@ const AppRoutes = ({
                         logout(setCart);
                     }}
                     getOrders={async () => {
-                        const { getOrders } = await import('../aws-config');
+                        const { getOrders } = await import('../../services/aws-config');
                         return await getOrders(adminId);
                     }}
                     updateOrderStatus={async (id, status) => {
-                        const { updateOrderStatus } = await import('../aws-config');
+                        const { updateOrderStatus } = await import('../../services/aws-config');
                         return await updateOrderStatus(id, status);
                     }}
                     proposeNewDeliveryDate={async (id, date, reason) => {
-                        const { proposeNewDeliveryDate } = await import('../aws-config');
+                        const { proposeNewDeliveryDate } = await import('../../services/aws-config');
                         return await proposeNewDeliveryDate(id, date, reason);
                     }}
                 />

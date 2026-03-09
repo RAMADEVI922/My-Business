@@ -18,7 +18,7 @@ const MyOrders = ({
 
     const handleSignatureSubmit = async (signatureDataUrl) => {
         try {
-            const { saveDeliverySignature } = await import('../aws-config.js');
+            const { saveDeliverySignature } = await import('../../services/aws-config.js');
             const result = await saveDeliverySignature(selectedOrderForSignature.orderId, signatureDataUrl);
             
             if (result.success) {

@@ -31,6 +31,29 @@ const AdminDashboard = ({
     const [isUploadingProduct, setIsUploadingProduct] = React.useState(false);
     const [selectedDate, setSelectedDate] = React.useState(new Date().toISOString().split('T')[0]);
     const [selectedDeliveryDate, setSelectedDeliveryDate] = React.useState(null);
+    const [lastUpdated, setLastUpdated] = React.useState(new Date());
+
+    // Auto-refresh orders every 30 seconds
+    React.useEffect(() => {
+        const refreshOrders = async () => {
+            try {
+                const updatedOrders = await getOrders();
+                setOrders(updatedOrders);
+                setLastUpdated(new Date());
+            } catch (error) {
+                console.error('Error refreshing orders:', error);
+            }
+        };
+
+        // Initial load
+        refreshOrders();
+
+        // Set up interval for auto-refresh
+        const intervalId = setInterval(refreshOrders, 30000); // 30 seconds
+
+        // Cleanup interval on unmount
+        return () => clearInterval(intervalId);
+    }, [getOrders, setOrders]);
 
     const handleProductInputChange = (e) => {
         const { name, value } = e.target;
@@ -44,11 +67,11 @@ const AdminDashboard = ({
             const id = `P${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
             let photoUrl = '';
             if (productPhotoFile) {
-                const { uploadToS3 } = await import('../aws-config.js');
+                const { uploadToS3 } = await import('../../services/aws-config.js');
                 photoUrl = await uploadToS3(productPhotoFile, 'product-images');
             }
             const productToAdd = { ...newProduct, id, photo: photoUrl || '' };
-            const { saveProduct } = await import('../aws-config.js');
+            const { saveProduct } = await import('../../services/aws-config.js');
             const success = await saveProduct(productToAdd, adminId);
             if (success) {
                 alert('Product added successfully. Refresh the page to see changes.');
@@ -62,7 +85,7 @@ const AdminDashboard = ({
 
     const handleDeleteProduct = async (id) => {
         if(window.confirm('Delete this product?')) {
-            const { removeProduct } = await import('../aws-config.js');
+            const { removeProduct } = await import('../../services/aws-config.js');
             await removeProduct(id);
             alert('Product deleted successfully. Refresh the page to see changes.');
         }
@@ -87,9 +110,34 @@ const AdminDashboard = ({
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '2rem', color: 'var(--text-primary)' }}>
-                                Dashboard Overview
-                            </h2>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                                    Dashboard Overview
+                                </h2>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '0.5rem',
+                                    padding: '0.5rem 1rem',
+                                    background: 'rgba(194, 120, 53, 0.1)',
+                                    borderRadius: '8px',
+                                    border: '1px solid rgba(194, 120, 53, 0.3)'
+                                }}>
+                                    <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                        style={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <span style={{ fontSize: '1rem' }}>🔄</span>
+                                    </motion.div>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                        <div style={{ fontWeight: 600 }}>Auto-updating</div>
+                                        <div style={{ fontSize: '0.75rem' }}>
+                                            Last: {lastUpdated.toLocaleTimeString()}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             {/* Summary Cards */}
                             <div style={{ 
@@ -351,7 +399,7 @@ const AdminDashboard = ({
                                         </button>
                                     )}
                                 </div>
-                                <button onClick={async () => { const o = await getOrders(); setOrders(o); }} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>↻ Refresh</button>
+                                <button onClick={async () => { const o = await getOrders(); setOrders(o); setLastUpdated(new Date()); }} style={{ background: 'none', border: 'none', color: 'var(--accent-color)', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>↻ Refresh</button>
                             </div>
                         </div>
                         {orders.filter(order => !selectedDate || order.createdAt.startsWith(selectedDate)).length === 0 ? (

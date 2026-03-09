@@ -43,7 +43,7 @@ const StoreSelector = ({ setView }) => {
 
     const fetchAdmins = async () => {
         try {
-            const { getAdminProfiles } = await import('../aws-config');
+            const { getAdminProfiles } = await import('../../services/aws-config');
             const adminList = await getAdminProfiles();
             setAdmins(adminList || []);
             setLoading(false);
@@ -64,7 +64,7 @@ const StoreSelector = ({ setView }) => {
         }
 
         try {
-            const { getProducts } = await import('../aws-config');
+            const { getProducts } = await import('../../services/aws-config');
             const results = [];
             
             // Search products from all admins
@@ -103,7 +103,7 @@ const StoreSelector = ({ setView }) => {
 
         // Fetch products for preview
         try {
-            const { getProducts } = await import('../aws-config');
+            const { getProducts } = await import('../../services/aws-config');
             const adminProducts = await getProducts(adminId);
             setProducts(adminProducts.slice(0, 3)); // Show first 3 products as preview
         } catch (err) {

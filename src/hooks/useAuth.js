@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAdmin, getCustomer, saveCustomer, uploadToS3, getOrdersByEmail, getOrders } from '../aws-config';
+import { getAdmin, getCustomer, saveCustomer, uploadToS3, getOrdersByEmail, getOrders } from '../services/aws-config';
 
 export const useAuth = (setView) => {
     const navigate = useNavigate();

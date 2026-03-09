@@ -12,7 +12,7 @@ const ContactUs = ({ setView, customerAdminId }) => {
     useEffect(() => {
         const fetchContactInfo = async () => {
             try {
-                const { getAdminContactInfo } = await import('../aws-config');
+                const { getAdminContactInfo } = await import('../../services/aws-config');
                 const info = await getAdminContactInfo(customerAdminId);
                 setContactInfo(info);
             } catch (error) {
