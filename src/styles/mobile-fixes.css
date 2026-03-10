@@ -3984,3 +3984,249 @@ html, body {
     letter-spacing: 0.3em !important;
   }
 }
+
+
+/* ========================================
+   CLERK FORM INPUTS - MOBILE FIXES
+   ======================================== */
+@media (max-width: 767px) {
+  /* Clerk form container */
+  .cl-rootBox {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .cl-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.5rem 1rem !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Clerk form fields */
+  .cl-formFieldInput,
+  .cl-input {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    border-radius: 8px !important;
+  }
+
+  /* Password input field - CRITICAL FIX */
+  input[type="password"],
+  .cl-formFieldInput input[type="password"] {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    position: relative !important;
+    z-index: 10 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+
+  /* Email input field */
+  input[type="email"],
+  .cl-formFieldInput input[type="email"] {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  /* Text input fields */
+  input[type="text"],
+  .cl-formFieldInput input[type="text"] {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    box-sizing: border-box !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  /* Clerk form field wrapper */
+  .cl-formField {
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Clerk form field label */
+  .cl-formFieldLabel {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+  }
+
+  /* Clerk form buttons */
+  .cl-formButtonPrimary,
+  .cl-button {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+  }
+
+  /* Clerk header */
+  .cl-headerTitle {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .cl-headerSubtitle {
+    font-size: 0.9rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Clerk divider */
+  .cl-dividerLine {
+    margin: 1.5rem 0 !important;
+  }
+
+  /* Clerk social buttons */
+  .cl-socialButtonsBlockButton {
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0.75rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Remove any overlays or modals that might block input */
+  .cl-modal {
+    z-index: 1000 !important;
+  }
+
+  /* Ensure inputs are not covered */
+  .cl-formFieldInput {
+    position: relative !important;
+    z-index: 10 !important;
+  }
+
+  /* Fix input focus state */
+  .cl-formFieldInput:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus,
+  input[type="text"]:focus {
+    outline: 2px solid #c27835 !important;
+    outline-offset: 2px !important;
+    z-index: 10 !important;
+  }
+
+  /* Remove webkit autofill styling that might interfere */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    box-shadow: 0 0 0 30px white inset !important;
+  }
+
+  /* Ensure form doesn't have overflow issues */
+  .cl-card form {
+    overflow: visible !important;
+  }
+
+  /* Fix any absolute positioning that might block inputs */
+  .cl-formFieldInput::after,
+  .cl-formFieldInput::before {
+    display: none !important;
+  }
+}
+
+/* ========================================
+   CUSTOMER REGISTER WRAPPER - MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+  .customer-register-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+
+  .customer-register-wrapper h2 {
+    font-size: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .customer-register-wrapper > div {
+    width: 100% !important;
+  }
+
+  /* Link button at bottom */
+  .customer-register-wrapper .link-text {
+    font-size: 0.9rem !important;
+    margin-top: 1rem !important;
+  }
+}
+
+/* ========================================
+   PREVENT INPUT BLOCKING ON MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+  /* Ensure no elements block input fields */
+  input,
+  textarea,
+  select {
+    position: relative !important;
+    z-index: 10 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+
+  /* Remove any overlays */
+  .cl-overlay {
+    display: none !important;
+  }
+
+  /* Ensure form is scrollable if needed */
+  .cl-card {
+    overflow-y: auto !important;
+    max-height: 90vh !important;
+  }
+
+  /* Fix keyboard appearance */
+  input[type="password"],
+  input[type="email"],
+  input[type="text"] {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+  }
+}
+
+/* ========================================
+   EXTRA SMALL SCREENS - REGISTRATION
+   ======================================== */
+@media (max-width: 374px) {
+  .customer-register-wrapper h2 {
+    font-size: 1.3rem !important;
+  }
+
+  .cl-card {
+    padding: 1rem !important;
+  }
+
+  .cl-formFieldInput,
+  input[type="password"],
+  input[type="email"],
+  input[type="text"] {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px !important;
+  }
+}

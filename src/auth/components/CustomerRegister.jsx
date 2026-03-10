@@ -41,29 +41,59 @@ const CustomerRegister = ({ setView, customerType }) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="customer-register-wrapper"
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '2rem', maxWidth: '600px', margin: '0 auto' }}
+            style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                gap: '1rem', 
+                padding: '2rem 1rem',
+                maxWidth: '600px', 
+                margin: '0 auto',
+                width: '100%',
+                boxSizing: 'border-box',
+                minHeight: '100vh'
+            }}
         >
             <h2 style={{ 
                 fontSize: '1.8rem', 
                 fontWeight: 700, 
                 color: '#c27835',
                 marginBottom: '1rem',
-                textAlign: 'center'
+                textAlign: 'center',
+                width: '100%'
             }}>
                 {title}
             </h2>
 
-            {/* Clerk SignUp Component */}
-            <SignUp 
-                routing="hash"
-                signInUrl="/customer-login"
-            />
+            {/* Clerk SignUp Component - Mobile Optimized */}
+            <div style={{
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+                position: 'relative',
+                zIndex: 1
+            }}>
+                <SignUp 
+                    routing="hash"
+                    signInUrl="/customer-login"
+                />
+            </div>
 
             <button 
                 type="button" 
                 onClick={() => setView('customer-login')} 
                 className="link-text" 
-                style={{ color: '#c27835', fontWeight: 600, marginTop: '1rem' }}
+                style={{ 
+                    color: '#c27835', 
+                    fontWeight: 600, 
+                    marginTop: '1rem',
+                    fontSize: '0.95rem',
+                    padding: '0.5rem 0',
+                    minHeight: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
             >
                 Already have an account? Login
             </button>
